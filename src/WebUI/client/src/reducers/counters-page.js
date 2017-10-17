@@ -23,7 +23,8 @@ export default function countersPageReducer(state = initialState, action){
 				items: {
 					...state.items,
 					fetching: true,
-				}
+				},
+				config: action.payload.config
 			};
 
 		case UPDATE_FAIL:

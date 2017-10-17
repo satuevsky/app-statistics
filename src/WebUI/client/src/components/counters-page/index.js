@@ -1,13 +1,16 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-
 import {withStyles} from 'material-ui/styles';
 import {indigo} from 'material-ui/colors';
-
 import {CircularProgress} from 'material-ui/Progress';
 import Typography from 'material-ui/Typography';
 import Table, {TableBody, TableCell, TableHead, TableRow} from 'material-ui/Table';
 import Paper from 'material-ui/Paper';
+import Select from 'material-ui/Select';
+import Input, { InputLabel } from 'material-ui/Input';
+import { MenuItem } from 'material-ui/Menu';
+import { FormControl, FormHelperText } from 'material-ui/Form';
+import {m, h, d} from '../../constants/counters-page';
 
 
 
@@ -21,8 +24,52 @@ const styles = theme => ({
 		position: "relative",
 		padding: 8,
 		textAlign: "center",
+		minWidth: 62
 	},
+	enCell: {
+		padding: 16,
+	},
+	configSelect: {
+		width: 100,
+	},
+	countersPaper: {
+		display: "table",
+		marginTop: 18
+	}
 });
+
+let configIntervals = {
+	keys: [h, d, 7*d, 30*d],
+	values: {
+		[h]: {display: "Hour"},
+		[d]: {display: "Day"},
+		[7*d]: {display: "Week"},
+		[30*d]: {display: "Month"}
+	}
+};
+
+function renderTime(ts, groupInterval){
+	let now = new Date(),
+		date = new Date(ts*1000),
+		fmt = {};
+
+	if(groupInterval < m)
+		fmt.second = "numeric";
+	if(groupInterval < d){
+		fmt.minute = "numeric";
+		fmt.hour = "numeric";
+		if(now.getDate() !== date.getDate() || now - date > d*1000){
+			fmt.day = "numeric";
+			fmt.month = "numeric";
+			fmt.year = "numeric";
+		}
+	}else{
+		fmt.day = "numeric";
+		fmt.month = "numeric";
+		fmt.year = "numeric";
+	}
+	return date.toLocaleString("ru", fmt).replace(',', '</br>');
+}
 
 
 class CountersPage extends React.Component{
@@ -37,19 +84,30 @@ class CountersPage extends React.Component{
 	};
 
 	componentWillMount(){
-		this.updateCounters();
-	}
-
-	updateCounters(){
 		this.props.updateCounters();
 	}
 
-
+	onIntervalChange = (event) => {
+		this.props.updateCounters({groupInterval: event.target.value});
+	};
 
 	renderTop(){
 		if(this.props.fetching){
 			return <CircularProgress size={32}/>
 		}
+	}
+	renderConfig(){
+		return <FormControl>
+			{/*<InputLabel htmlFor="age-simple">Age</InputLabel>*/}
+			<Select
+				className={this.props.classes.configSelect}
+				value={this.props.config.groupInterval}
+				renderValue={value => configIntervals.values[value].display}
+				onChange={this.onIntervalChange}
+			>
+				{configIntervals.keys.map(t => <MenuItem key={t} value={t}>{configIntervals.values[t].display}</MenuItem>)}
+			</Select>
+		</FormControl>
 	}
 	renderCounters(){
 		/*if(!this.props.counters.length){
@@ -67,41 +125,44 @@ class CountersPage extends React.Component{
 			currentTimeGroup -= groupInterval;
 		}
 
-		return <Paper style={{display: "table"}}><Table>
-			<TableHead>
-				<TableRow>
-					<TableCell>Counter Names</TableCell>
+		return <div>
+			{this.renderConfig()}
+			<Paper className={classes.countersPaper}><Table>
+				<TableHead>
+					<TableRow>
+						<TableCell className={classes.enCell}>Counter Names</TableCell>
+						{
+							timeGroups.map((gt) => <TableCell className={classes.cell} key={gt} dangerouslySetInnerHTML={{__html: renderTime(gt, groupInterval)}}/>)
+						}
+					</TableRow>
+				</TableHead>
+				<TableBody>
 					{
-						timeGroups.map((gt) => <TableCell className={classes.cell} key={gt}>{new Date(gt*1000).toLocaleString("ru", {hour: "numeric", minute: "numeric"})}</TableCell>)
-					}
-				</TableRow>
-			</TableHead>
-			<TableBody>
-				{
-					counterNames.map(cn => {
-						const counter = counters[cn] || {values: {}};
+						counterNames.map(cn => {
+							const counter = counters[cn] || {values: {}};
 
-						return <TableRow key={cn}>
-							<TableCell numeric={true}>{cn}</TableCell>
-							{
-								timeGroups.map(tg => {
-									const value = counter.values[tg] || 0,
-										  percent = Math.round(value/counter.maxValue*100) * 0.95,
-										  percent2 = Math.min(percent + 12, 100);
-									return <TableCell
-										key={tg}
-										className={classes.cell}
-										style={{background: `linear-gradient(to top, ${indigo[50]} ${percent}%, rgba(255,255,255,0) ${percent2}%)`}}
-									>
-										{value}
-									</TableCell>
-								})
-							}
-						</TableRow>
-					})
-				}
-			</TableBody>
-		</Table></Paper>
+							return <TableRow key={cn}>
+								<TableCell className={classes.enCell}>{cn}</TableCell>
+								{
+									timeGroups.map(tg => {
+										const value = counter.values[tg] || 0,
+											percent = Math.round(value/counter.maxValue*100) * 0.95,
+											percent2 = Math.min(percent + 12, 100);
+										return <TableCell
+											key={tg}
+											className={classes.cell}
+											style={{background: `linear-gradient(to top, ${indigo[50]} ${percent}%, rgba(255,255,255,0) ${percent2}%)`}}
+										>
+											{value}
+										</TableCell>
+									})
+								}
+							</TableRow>
+						})
+					}
+				</TableBody>
+			</Table></Paper>
+		</div>
 	}
 
 	render(){

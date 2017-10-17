@@ -1,25 +1,37 @@
-import {UPDATING, UPDATE_OK, UPDATE_FAIL, s, m, h, d} from '../constants/counters-page';
+import {UPDATING, UPDATE_OK, UPDATE_FAIL, SET_CONFIG} from '../constants/counters-page';
 import {api} from '../api';
 
-export function updateCounters(){
+export function updateCounters({groupInterval, showCount} = {}){
 	return async (dispatch, getState) => {
-		if(getState().countersPage.items.fetching)return;
+		let {config, items} = getState().countersPage;
 
-		dispatch({type: UPDATING});
+		if(
+			(groupInterval && groupInterval !== config.groupInterval) ||
+			(showCount && showCount !== config.showCount) ||
+			!items.fetching
+		){
+			config = {
+				groupInterval: groupInterval || config.groupInterval,
+				showCount: showCount || config.showCount,
+			};
+			dispatch({type: UPDATING, payload: {config}});
 
-		try {
-			let now = Math.floor(Date.now()/1000),
-				{groupInterval, showCount} = getState().countersPage.config,
-				lastGroup = now - now%groupInterval,
-				toDate = lastGroup - groupInterval*(showCount-1),
-				counters = await api('counters.get', {interval: groupInterval, toDate});
+			try {
+				let now = Math.floor(Date.now()/1000),
+					{groupInterval, showCount} = getState().countersPage.config,
+					lastGroup = now - now%groupInterval,
+					toDate = lastGroup - groupInterval*(showCount-1),
+					counters = await api('counters.get', {interval: groupInterval, toDate});
 
-			dispatch({
-				type: UPDATE_OK,
-				payload: {data: counters}
-			});
-		}catch(e){
-			dispatch({type: UPDATE_FAIL});
+				if(getState().countersPage.config === config)
+					dispatch({
+						type: UPDATE_OK,
+						payload: {data: counters}
+					});
+			}catch(e){
+				if(getState().countersPage.config === config)
+					dispatch({type: UPDATE_FAIL});
+			}
 		}
 	}
 }
