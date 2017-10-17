@@ -40,8 +40,8 @@ class Statistics{
 	 * @param {Number} [groupsLimit=7] - For returns no more than the specified number of groups.
 	 * @return {Promise.<[{date: Number, counters: Object}]>}
 	 */
-	getCounters({groupByInterval=h, toDate, groupsLimit=7}={}){
-		return this.countersTracker.getCounters({groupByInterval, toDate, groupsLimit});
+	getCounters({groupByInterval=h, toDate}={}){
+		return this.countersTracker.getCounters({groupByInterval, toDate});
 	}
 
 	/**

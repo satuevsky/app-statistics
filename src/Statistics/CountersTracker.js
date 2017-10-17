@@ -57,10 +57,15 @@ class CountersTracker{
 	}
 
 
-	async getCounters({groupByInterval, toDate, groupsLimit}){
+	async getCounters({groupByInterval, toDate}){
 		let now = Date.now(),
-			curGT = now - now%groupByInterval;
-		toDate = Math.max(toDate || 0, curGT - (groupsLimit-1)*groupByInterval);
+			lastGroupTime = now - now % groupByInterval,
+			toDateDiff = lastGroupTime - toDate,
+			groupsCount = (toDateDiff / groupByInterval);
+
+		if(groupsCount > 30){
+			toDate = lastGroupTime - groupByInterval * 30;
+		}
 
 		let docs = await this.countersCollection
 				.find({_id: {$gte: new Date(toDate)}})
@@ -70,14 +75,14 @@ class CountersTracker{
 			lastGroup = {};
 
 		docs.forEach(doc => {
-			let groupTime = doc._id - doc._id % groupByInterval;
-			if(groupTime !== lastGroup.date){
-				lastGroup = {date: groupTime, counters: {}};
+			let groupTime = Math.floor((doc._id - doc._id % groupByInterval)/1000);
+			if(groupTime !== lastGroup.time){
+				lastGroup = {time: groupTime, values: {}};
 				grouped.push(lastGroup);
 			}
 			Object.keys(doc.counters).forEach(key => {
 				let eventName = decodeEventName(key);
-				lastGroup.counters[eventName] = (lastGroup.counters[eventName] || 0) + doc.counters[key];
+				lastGroup.values[eventName] = (lastGroup.values[eventName] || 0) + doc.counters[key];
 			});
 		});
 
