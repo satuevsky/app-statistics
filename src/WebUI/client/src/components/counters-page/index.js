@@ -13,9 +13,9 @@ import Paper from 'material-ui/Paper';
 
 const styles = theme => ({
 	root: {
-		padding: "0 18px 100px",
-		overflow: "auto",
-		["-webkit-overflow-scrolling"]: "touch",
+		//padding: "0 18px 100px",
+		//overflow: "auto",
+		//["-webkit-overflow-scrolling"]: "touch",
 	},
 	cell: {
 		position: "relative",
@@ -57,12 +57,12 @@ class CountersPage extends React.Component{
 		}*/
 
 		let {counters, counterNames, config, classes} = this.props,
-			{groupInterval, showTime} = config,
-			now = Date.now(),
+			{groupInterval, showCount} = config,
+			now = Math.floor(Date.now()/1000),
 			currentTimeGroup = now - now % groupInterval,
 			timeGroups = [];
 
-		while(now - currentTimeGroup < showTime){
+		while(timeGroups.length < showCount){
 			timeGroups.push(currentTimeGroup);
 			currentTimeGroup -= groupInterval;
 		}
@@ -72,7 +72,7 @@ class CountersPage extends React.Component{
 				<TableRow>
 					<TableCell>Counter Names</TableCell>
 					{
-						timeGroups.map((gt) => <TableCell className={classes.cell} key={gt}>{new Date(gt).toLocaleString("ru", {hour: "numeric", minute: "numeric"})}</TableCell>)
+						timeGroups.map((gt) => <TableCell className={classes.cell} key={gt}>{new Date(gt*1000).toLocaleString("ru", {hour: "numeric", minute: "numeric"})}</TableCell>)
 					}
 				</TableRow>
 			</TableHead>
@@ -87,11 +87,11 @@ class CountersPage extends React.Component{
 								timeGroups.map(tg => {
 									const value = counter.values[tg] || 0,
 										  percent = Math.round(value/counter.maxValue*100) * 0.95,
-										  percent2 = Math.min(percent + 30, 100);
+										  percent2 = Math.min(percent + 12, 100);
 									return <TableCell
 										key={tg}
 										className={classes.cell}
-										style={{background: `linear-gradient(to top, ${indigo[50]} ${percent}%, transparent ${percent}%)`}}
+										style={{background: `linear-gradient(to top, ${indigo[50]} ${percent}%, rgba(255,255,255,0) ${percent2}%)`}}
 									>
 										{value}
 									</TableCell>

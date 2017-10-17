@@ -29,12 +29,12 @@ const styles = theme => ({
 	},
 
 	main: {
-		paddingTop: 18,
-		display: "flex",
-		justifyContent: "center",
+		padding: 18,
+		display: "table",
+		margin: "0 auto",
 	},
 
-	drawerHeader: theme.mixins.toolbar,
+	toolbarSpace: theme.mixins.toolbar,
 	drawerHeaderTyp: {
 		margin: 18,
 		marginBottom: -18
@@ -59,7 +59,7 @@ class Main extends React.Component{
 	};
 
 	renderAppBar(classes){
-		return <AppBar className={classes.navRoot} position="static">
+		return <AppBar className={classes.navRoot} position="fixed">
 			<Toolbar>
 				<IconButton className={classes.navIcon} color="contrast" aria-label="Menu" onClick={this.handleDrawerToggle}>
 					<MenuIcon />
@@ -81,7 +81,7 @@ class Main extends React.Component{
 			}}
 		>
 			<div>
-				<div className={classes.drawerHeader} >
+				<div className={classes.toolbarSpace} >
 					<Typography className={classes.drawerHeaderTyp} type="title" color="inherit">Menu</Typography>
 				</div>
 				<Divider />
@@ -112,6 +112,7 @@ class Main extends React.Component{
 		return <div>
 			{this.renderAppBar(classes)}
 			{this.renderDrawer(classes)}
+			<div className={classes.toolbarSpace}/>
 			<main className={classes.main}>
 				<Switch>
 					<Route path={getRoutePath(COUNTERS)} component={CountersPage}/>
