@@ -1,4 +1,4 @@
-import {UPDATING, UPDATE_OK, UPDATE_FAIL, s, m, h, d} from '../constants/counters-page';
+import {UPDATING, UPDATE_OK, UPDATE_FAIL, h} from '../constants/counters-page';
 
 
 const initialState = {
@@ -9,7 +9,7 @@ const initialState = {
 		error: false,
 	},
 	config: {
-		groupInterval: h/s,
+		groupInterval: h,
 		showCount: 7,
 	}
 };
