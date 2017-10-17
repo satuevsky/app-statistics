@@ -8,7 +8,12 @@ export function updateCounters(){
 		dispatch({type: UPDATING});
 
 		try {
-			let counters = await api('counters.get');
+			let now = Math.floor(Date.now()/1000),
+				{groupInterval, showCount} = getState().countersPage.config,
+				lastGroup = now - now%groupInterval,
+				toDate = lastGroup - groupInterval*(showCount-1),
+				counters = await api('counters.get', {interval: groupInterval, toDate});
+
 			dispatch({
 				type: UPDATE_OK,
 				payload: {data: counters}

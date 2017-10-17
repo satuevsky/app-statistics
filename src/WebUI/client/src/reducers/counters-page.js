@@ -9,8 +9,8 @@ const initialState = {
 		error: false,
 	},
 	config: {
-		groupInterval: h,
-		showTime: d,
+		groupInterval: h/s,
+		showCount: 7,
 	}
 };
 
