@@ -19,7 +19,7 @@ function setNextAutoFlushTimeout(self){
 		nextAutoFlushTimeout = Math.min(nextGroupTime - Date.now(), self.autoFlushInterval);
 
 	setTimeout(() => {
-		self.flushCounters();
+		self.saveCounters();
 		setNextAutoFlushTimeout(self);
 	}, nextAutoFlushTimeout)
 }
@@ -74,7 +74,15 @@ class CountersTracker{
 			grouped = [],
 			lastGroup = {};
 
-		docs.forEach(doc => {
+		//add current counters to response
+		add({
+			_id: new Date(this.currentCounters.time),
+			counters: this.currentCounters.counters
+		});
+		//add counters from db
+		docs.forEach(add);
+
+		function add(doc){
 			let groupTime = Math.floor((doc._id - doc._id % groupByInterval)/1000);
 			if(groupTime !== lastGroup.time){
 				lastGroup = {time: groupTime, values: {}};
@@ -84,7 +92,7 @@ class CountersTracker{
 				let eventName = decodeEventName(key);
 				lastGroup.values[eventName] = (lastGroup.values[eventName] || 0) + doc.counters[key];
 			});
-		});
+		}
 
 		return grouped;
 	}
@@ -92,7 +100,7 @@ class CountersTracker{
 	/**
 	 * Save counters to database
 	 */
-	flushCounters(){
+	saveCounters(){
 		if(this.currentCounters.hasNew){
 			this.countersCollection.updateOne(
 				{_id: new Date(this.currentCounters.time)},
