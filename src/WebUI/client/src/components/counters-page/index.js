@@ -101,6 +101,9 @@ class CountersPage extends React.Component{
 	};
 
 	renderTop(){
+		if(this.props.error){
+			return <Typography type="subheading" color="error">Failed to retrieve data!</Typography>
+		}
 		if(this.props.fetching){
 			return <CircularProgress size={32}/>
 		}
@@ -176,7 +179,7 @@ class CountersPage extends React.Component{
 
 	render(){
 		return <div className={this.props.classes.root}>
-			{this.props.fetching && !this.props.counters ?
+			{this.props.error || (this.props.fetching && !this.props.counters) ?
 				this.renderTop()
 				:
 				this.renderCounters()
