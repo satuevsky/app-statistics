@@ -86,6 +86,15 @@ class CountersPage extends React.Component{
 	componentWillMount(){
 		this.props.updateCounters();
 	}
+	componentWillUnmount(){
+		clearTimeout(this._t);
+	}
+	componentWillReceiveProps(props){
+		if(!props.fetching && !props.error && props.counters){
+			clearTimeout(this._t);
+			this._t = setTimeout(this.props.updateCounters, 1000);
+		}
+	}
 
 	onIntervalChange = (event) => {
 		this.props.updateCounters({groupInterval: event.target.value});
@@ -167,7 +176,7 @@ class CountersPage extends React.Component{
 
 	render(){
 		return <div className={this.props.classes.root}>
-			{this.props.fetching ?
+			{this.props.fetching && !this.props.counters ?
 				this.renderTop()
 				:
 				this.renderCounters()

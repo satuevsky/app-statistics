@@ -3,25 +3,29 @@ import {api} from '../api';
 
 export function updateCounters({groupInterval, showCount} = {}){
 	return async (dispatch, getState) => {
-		let {config, items} = getState().countersPage;
+		let {config, items} = getState().countersPage,
+			isNewConfig = (groupInterval && groupInterval !== config.groupInterval) || (showCount && showCount !== config.showCount);
 
-		if(
-			(groupInterval && groupInterval !== config.groupInterval) ||
-			(showCount && showCount !== config.showCount) ||
-			!items.fetching
-		){
-			config = {
-				groupInterval: groupInterval || config.groupInterval,
-				showCount: showCount || config.showCount,
-			};
-			dispatch({type: UPDATING, payload: {config}});
+		if(isNewConfig || !items.fetching){
+			if(isNewConfig)
+				config = {
+					groupInterval: groupInterval || config.groupInterval,
+					showCount: showCount || config.showCount,
+				};
+
+			dispatch({type: UPDATING, payload: {config, isNewConfig}});
 
 			try {
-				let now = Math.floor(Date.now()/1000),
-					{groupInterval, showCount} = getState().countersPage.config,
-					lastGroup = now - now%groupInterval,
-					toDate = lastGroup - groupInterval*(showCount-1),
-					counters = await api('counters.get', {interval: groupInterval, toDate});
+				let toDate = getState().countersPage.items.lastGroupTime;
+
+				if(!toDate){
+					let now = Math.floor(Date.now()/1000),
+						{groupInterval, showCount} = config,
+						lastGroupTime = now - now % groupInterval;
+					toDate = lastGroupTime - groupInterval*(showCount-1);
+				}
+
+				let counters = await api('counters.get', {interval: config.groupInterval, toDate});
 
 				if(getState().countersPage.config === config)
 					dispatch({
