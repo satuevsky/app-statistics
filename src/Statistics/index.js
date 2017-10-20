@@ -12,8 +12,9 @@ class Statistics{
 	 * @param {Number} [countersGroupTimeLapse=3600000] - Interval for grouping counters. By default one hour.
 	 * @param {Number} [countersAutoFlushInterval=10000] - Interval between saving counters to db. By default 10 seconds.
 	 * @param {Number} [eventsExpire] - Number of seconds during which the event will be stored. By default, events will not be deleted.
+	 * @param {Boolean} [listenConsole=false] - If true then will be track console events. By default false.
 	 */
-	constructor({db, countersAutoFlushInterval=10000, countersGroupTimeLapse=h, eventsExpire}){
+	constructor({db, countersAutoFlushInterval=10000, countersGroupTimeLapse=h, eventsExpire, listenConsole=false}){
 		this.countersTracker = new CountersTracker({
 			db,
 			autoFlushInterval: countersAutoFlushInterval,
@@ -23,6 +24,22 @@ class Statistics{
 			db,
 			expire: eventsExpire
 		});
+
+		if(listenConsole){
+			let self = this,
+				{error, warn, log} = console;
+
+			console.error = hookConsole(error, "console_error");
+			console.warn = hookConsole(warn, "console_warn");
+			console.log = hookConsole(log, "console_log");
+
+			function hookConsole(method, eventName){
+				return function(){
+					self.track({eventName, data: arguments});
+					method.apply(console, arguments);
+				}
+			}
+		}
 	}
 
 	track({eventName, uid, data, toCountersOnly}){
