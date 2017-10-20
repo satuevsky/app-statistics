@@ -23,18 +23,30 @@ class EventsTracker{
 	}
 
 
-	async getEvents({count, fromDate, eventsFilter}){
+	async getEvents({count, fromDate, toDate, eventsFilter}){
 		let query = {};
-		if(fromDate)
-			query.date = {$lt: fromDate};
-		if(eventsFilter)
+		if(eventsFilter){
 			query.en = eventsFilter;
+		}
+		if(fromDate || toDate){
+			query.date = {};
+			if(fromDate){
+				query.date.$lt = new Date(fromDate);
+			}
+			if(toDate){
+				query.date.$gt = new Date(toDate);
+			}
+		}
 
-		return await this.eventsCollection
+		return (await this.eventsCollection
 			.find(query)
 			.sort({date: -1})
 			.limit(count)
-			.toArray();
+			.toArray())
+			.map(e => {
+				e.date = e.date.getTime();
+				return e;
+			});
 	}
 }
 
