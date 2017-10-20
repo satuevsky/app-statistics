@@ -27,7 +27,7 @@ class EventRow extends React.Component{
 			<TableCell className={classes.cell}>{new Date(event.date).toLocaleString("en", timeFmt)}</TableCell>
 			<TableCell className={classes.cell}>{event.en}</TableCell>
 			<TableCell className={classes.cell}>{event.uid}</TableCell>
-			<TableCell className={classes.cell}>{event.data}</TableCell>
+			<TableCell className={classes.cell}>{JSON.stringify(event.data)}</TableCell>
 		</TableRow>
 	}
 }
