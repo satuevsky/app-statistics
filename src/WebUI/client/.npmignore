@@ -1,0 +1,9 @@
+# Created by .ignore support plugin (hsz.mobi)
+
+public
+src
+views
+
+*.map
+build/index.html
+build/service-worker.js

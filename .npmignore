@@ -1,6 +1,4 @@
 # Created by .ignore support plugin (hsz.mobi)
 
-/src/WebUI/client/public/
-/src/WebUI/client/src/
-/src/WebUI/client/views/
-/devWebUI.js
+/.idea
+devWebUI.js
