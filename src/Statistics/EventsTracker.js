@@ -1,6 +1,6 @@
 class EventsTracker{
 	constructor({db, expire}){
-		this.eventsCollection = db.collection('analytics_events');
+		this.eventsCollection = db.collection('app_statistics_events');
 		this.eventsCollection.createIndex({en: 1});
 		this.eventsCollection.createIndex({date: 1}, expire ? {expireAfterSeconds: expire} : null);
 	}

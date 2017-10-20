@@ -35,7 +35,7 @@ function decodeEventName(eventName){
 
 class CountersTracker{
 	constructor({db, groupTimeInterval=h, autoFlushInterval=10*s}) {
-		this.countersCollection = db.collection('analytics_counters');
+		this.countersCollection = db.collection('app_statistics_counters');
 		this.groupTimeInterval = normalizeGroupTimeInterval(groupTimeInterval);
 		this.autoFlushInterval = autoFlushInterval;
 		this.currentCounters = {
