@@ -1,11 +1,18 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+
+import {withStyles} from 'material-ui/styles';
 import {TableRow, TableCell} from "material-ui/Table";
 
 const timeFmt = {hour: "numeric", minute: "numeric", second: "numeric"};
 
+const styles = () => ({
+	cell: {
+		whiteSpace: "nowrap"
+	}
+});
 
-export default class EventRow extends React.Component{
+class EventRow extends React.Component{
 	static propTypes = {
 		event: PropTypes.object,
 	};
@@ -15,12 +22,14 @@ export default class EventRow extends React.Component{
 	}
 
 	render(){
-		const {event} = this.props;
+		const {event, classes} = this.props;
 		return <TableRow>
-			<TableCell>{new Date(event.date).toLocaleString("en", timeFmt)}</TableCell>
-			<TableCell>{event.en}</TableCell>
-			<TableCell>{event.uid}</TableCell>
-			<TableCell>{event.data}</TableCell>
+			<TableCell className={classes.cell}>{new Date(event.date).toLocaleString("en", timeFmt)}</TableCell>
+			<TableCell className={classes.cell}>{event.en}</TableCell>
+			<TableCell className={classes.cell}>{event.uid}</TableCell>
+			<TableCell className={classes.cell}>{event.data}</TableCell>
 		</TableRow>
 	}
 }
+
+export default withStyles(styles)(EventRow);
