@@ -36,10 +36,13 @@ class EventsPage extends React.Component{
 		window.removeEventListener('scroll', this.handleScroll);
 	}
 
-	handleScroll = (e) => {
-		let {scrollTop, scrollHeight, clientHeight} = document.body.parentNode;
+	handleScroll = () => {
+		let {scrollHeight, clientHeight} = document.body.parentNode,
+			scrollTop = window.pageYOffset;
 
-		if(scrollHeight - (scrollTop + clientHeight) < 800 && !this.props.fetching){
+		//alert(JSON.stringify({scrollTop, scrollHeight, clientHeight}));
+
+		if(scrollHeight - (scrollTop + clientHeight) < (this.props.events.length < 100 ? 800 : 1600) && !this.props.fetching){
 			this.props.fetchNextEvents();
 		}
 	};
