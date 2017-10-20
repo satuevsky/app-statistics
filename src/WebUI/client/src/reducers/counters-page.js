@@ -27,6 +27,7 @@ export default function countersPageReducer(state = initialState, action){
 					counterNames: action.payload.isNewConfig ? [] : state.items.counterNames,
 					lastGroupTime: action.payload.isNewConfig ? 0 : state.items.lastGroupTime,
 					fetching: true,
+					error: false,
 				},
 				config: action.payload.config
 			};
