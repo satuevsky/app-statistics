@@ -24,17 +24,18 @@ const styles = theme => ({
 		position: "relative",
 		padding: 8,
 		textAlign: "center",
-		minWidth: 62
+		minWidth: 62,
 	},
 	enCell: {
 		padding: 16,
 	},
 	configSelect: {
 		width: 100,
+		marginLeft: 16
 	},
 	countersPaper: {
 		display: "table",
-		marginTop: 18
+		marginTop: 16
 	}
 });
 
