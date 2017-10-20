@@ -16,7 +16,7 @@ import {COUNTERS, EVENTS} from '../../constants/route-paths';
 import {Switch, Route, Redirect, NavLink, Link} from 'react-router-dom';
 
 import CountersPage from '../../containers/counters-page';
-import EventsPage from '../events-page';
+import EventsPage from '../../containers/events-page';
 
 const drawerWidth = 240;
 
