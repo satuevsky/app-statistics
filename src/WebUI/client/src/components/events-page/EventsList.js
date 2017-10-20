@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import Paper from 'material-ui/Paper';
+import Typography from 'material-ui/Typography';
 import {withStyles} from 'material-ui/styles';
 import Table, {TableBody, TableHead, TableRow, TableCell} from "material-ui/Table";
 import EventRow from './EventRow';
@@ -9,7 +10,10 @@ const dateFmt = {year: "numeric", month: "long", day: "numeric"};
 
 const styles = theme => ({
 	paper: {
-		marginBottom: 18,
+		marginBottom: 16,
+	},
+	dayTitle: {
+		marginLeft: 8,
 	}
 });
 
@@ -41,19 +45,24 @@ class EventList extends React.Component{
 		function pushDay(){
 			if(!dayEvents)return;
 
-
-			days.push(<Paper className={classes.paper} key={currentDay}>
-				<Table>
-					<TableHead>
-						<TableRow>
-							<TableCell colSpan={4}>{new Date(currentDay).toLocaleString("en", dateFmt)}</TableCell>
-						</TableRow>
-					</TableHead>
-					<TableBody>
-						{dayEvents.map(e => <EventRow key={e.date+e.uid} event={e}/>)}
-					</TableBody>
-				</Table>
-			</Paper>)
+			days.push(<div key={currentDay}>
+				<Typography className={classes.dayTitle} type="body2" color="secondary">{new Date(currentDay).toLocaleString("en", dateFmt)}</Typography>
+				<Paper className={classes.paper}>
+					<Table>
+						<TableHead>
+							<TableRow>
+								<TableCell>Time</TableCell>
+								<TableCell>Event name</TableCell>
+								<TableCell>UserId</TableCell>
+								<TableCell>Data</TableCell>
+							</TableRow>
+						</TableHead>
+						<TableBody>
+							{dayEvents.map(e => <EventRow key={e.date+e.uid} event={e}/>)}
+						</TableBody>
+					</Table>
+				</Paper>
+			</div>)
 		}
 
 		for(let i = 0; i < events.length; i++){
