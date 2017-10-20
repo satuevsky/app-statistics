@@ -5,6 +5,7 @@ module.exports = {
 		let apiServer = vklapi.Server({context});
 
 		apiServer.addMethod(require('./counters-get'));
+		apiServer.addMethod(require('./events-get'));
 
 		return apiServer;
 	}
