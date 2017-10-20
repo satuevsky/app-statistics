@@ -1,13 +1,19 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import Paper from 'material-ui/Paper';
+import {withStyles} from 'material-ui/styles';
 import Table, {TableBody, TableHead, TableRow, TableCell} from "material-ui/Table";
 import EventRow from './EventRow';
 
-
 const dateFmt = {year: "numeric", month: "long", day: "numeric"};
 
-export default class EventList extends React.Component{
+const styles = theme => ({
+	paper: {
+		marginBottom: 18,
+	}
+});
+
+class EventList extends React.Component{
 	static propTypes = {
 		events: PropTypes.array,
 	};
@@ -26,7 +32,7 @@ export default class EventList extends React.Component{
 	}
 
 	render(){
-		let {events} = this.props;
+		let {events, classes} = this.props;
 
 		let days = [],
 			currentDay = null,
@@ -36,7 +42,7 @@ export default class EventList extends React.Component{
 			if(!dayEvents)return;
 
 
-			days.push(<Paper key={currentDay}>
+			days.push(<Paper className={classes.paper} key={currentDay}>
 				<Table>
 					<TableHead>
 						<TableRow>
@@ -64,3 +70,5 @@ export default class EventList extends React.Component{
 		return <div>{days}</div>;
 	}
 }
+
+export default withStyles(styles)(EventList);
