@@ -1,13 +1,22 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import Paper from 'material-ui/Paper'
+import {withStyles} from 'material-ui/styles';
+import Paper from 'material-ui/Paper';
 import Table, {TableHead, TableBody, TableRow, TableCell} from 'material-ui/Table'
 import Typography from 'material-ui/Typography'
 import {CircularProgress} from 'material-ui/Progress';
 import EventsList from './EventsList';
 
-export default class EventsPage extends React.Component{
+
+const styles = theme => ({
+	progress: {
+		margin: "0 auto",
+		display: "table"
+	}
+});
+
+class EventsPage extends React.Component{
 	static propTypes = {
 		events: PropTypes.array,
 		fetching: PropTypes.bool,
@@ -37,7 +46,7 @@ export default class EventsPage extends React.Component{
 
 	renderFooter(){
 		if(this.props.fetching){
-			return <CircularProgress size={32}/>
+			return <div className={this.props.classes.progress}><CircularProgress size={32}/></div>
 		}
 		if(this.props.error){
 			return <Typography type="subheading" color="error">Failed to retrieve data!</Typography>
@@ -59,3 +68,5 @@ export default class EventsPage extends React.Component{
 		</div>
 	}
 }
+
+export default withStyles(styles)(EventsPage);
