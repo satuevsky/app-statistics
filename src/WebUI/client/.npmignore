@@ -2,7 +2,6 @@
 
 public
 src
-views
 
 *.map
 build/index.html
