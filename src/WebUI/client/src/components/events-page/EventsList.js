@@ -13,27 +13,14 @@ const styles = theme => ({
 		marginBottom: 16,
 	},
 	dayTitle: {
-		marginLeft: 8,
+		marginLeft: 4,
 	}
 });
 
-class EventList extends React.Component{
+class EventList extends React.PureComponent{
 	static propTypes = {
 		events: PropTypes.array,
 	};
-
-	constructor(props){
-		super(props);
-		this.prevEventsLength = props.events.length;
-	}
-
-	shouldComponentUpdate(props){
-		if(props.events !== this.props.events || props.events.length !== this.prevEventsLength){
-			this.prevEventsLength = props.events.length;
-			return true;
-		}
-		return false;
-	}
 
 	render(){
 		let {events, classes} = this.props;

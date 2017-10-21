@@ -65,7 +65,7 @@ class Main extends React.Component{
 					<MenuIcon />
 				</IconButton>
 				<Typography type="title" color="inherit">
-					Analytics
+					AppStatistics
 				</Typography>
 			</Toolbar>
 		</AppBar>
