@@ -54,6 +54,7 @@ export default function countersPageReducer(state = initialState, action){
 					let counter = counters[cn];
 					if(!counter){
 						counterNames.push(cn);
+						counterNames.sort();
 						counter = counters[cn] = {maxValue: 0, values: {}};
 					}
 					const value = c.values[cn];
