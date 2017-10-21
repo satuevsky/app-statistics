@@ -1,4 +1,4 @@
-import {FETCHING, FETCH_OK, FETCH_FAIL} from '../constants/evetns-page';
+import {FETCHING, FETCH_OK, FETCH_FAIL, CLEAR_EVENTS} from '../constants/evetns-page';
 
 
 const initialState = {
@@ -37,23 +37,36 @@ export default function countersPageReducer(state = initialState, action){
 
 			switch (pushTo){
 				case -1:
+
 					items = items.concat(oldItems); break;
 				case 1:
-					//items = oldItems.concat(items); break;
-					Array.prototype.push.apply(oldItems, items); break;
+					items = oldItems.concat(items); break;
+					//Array.prototype.push.apply(oldItems, items); break;
 			}
 
 			return {
 				...state,
 				events: {
 					...state.events,
-					items: oldItems,
+					items,
 					hasMore,
 					fetching: false,
 					error: false,
 				}
 			};
 		}
+
+		case CLEAR_EVENTS:
+			return {
+				...state,
+				events: {
+					...state.events,
+					items: [],
+					hasMore: true,
+					fetching: false,
+					error: false,
+				}
+			};
 
 
 		default: return state;

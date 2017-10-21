@@ -1,4 +1,4 @@
-import {FETCHING, FETCH_FAIL, FETCH_OK} from '../constants/evetns-page';
+import {FETCHING, FETCH_FAIL, FETCH_OK, CLEAR_EVENTS} from '../constants/evetns-page';
 import {api} from '../api';
 
 export function fetchNextEvents(){
@@ -22,6 +22,32 @@ export function fetchNextEvents(){
 		}
 	}
 }
+
+/*export function fetchNewEvents(){
+	return async (dispatch, getState) => {
+		let {items} = getState().eventsPage.events;
+
+		try {
+			let toDate = items.length && items[0].date,
+				events = await api('events.get', {toDate, count: 100});
+
+			dispatch({
+				type: FETCH_OK,
+				payload: {...events, pushTo: -1}
+			});
+		}catch(e){
+			//dispatch({type: FETCH_FAIL});
+		}
+	}
+}*/
+
+
+export function clearEvents(){
+	return async (dispatch) => {
+		dispatch({type: CLEAR_EVENTS});
+	}
+}
+
 
 
 

@@ -1,6 +1,6 @@
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
-import {fetchNextEvents} from '../../actions/events-page';
+import {fetchNextEvents, clearEvents} from '../../actions/events-page';
 import Component from '../../components/events-page';
 
 
@@ -15,7 +15,10 @@ function mapStateToProps({eventsPage}){
 }
 
 function mapDispatchToProps(dispatch){
-	return bindActionCreators({fetchNextEvents}, dispatch);
+	return bindActionCreators({
+		clearEvents,
+		fetchNextEvents,
+	}, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(Component);

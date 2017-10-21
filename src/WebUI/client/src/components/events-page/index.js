@@ -23,6 +23,7 @@ class EventsPage extends React.Component{
 		hasMore: PropTypes.bool,
 		error: PropTypes.bool,
 
+		clearEvents: PropTypes.func,
 		fetchNextEvents: PropTypes.func,
 	};
 
@@ -34,6 +35,7 @@ class EventsPage extends React.Component{
 	}
 	componentWillUnmount(){
 		window.removeEventListener('scroll', this.handleScroll);
+		this.props.clearEvents();
 	}
 
 	handleScroll = () => {
@@ -42,7 +44,7 @@ class EventsPage extends React.Component{
 
 		//alert(JSON.stringify({scrollTop, scrollHeight, clientHeight}));
 
-		if(scrollHeight - (scrollTop + clientHeight) < (this.props.events.length < 100 ? 800 : 1600) && !this.props.fetching){
+		if(scrollHeight - (scrollTop + clientHeight) < (this.props.events.length < 60 ? 800 : 1600) && !this.props.fetching){
 			this.props.fetchNextEvents();
 		}
 	};
