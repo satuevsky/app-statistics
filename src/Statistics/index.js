@@ -70,7 +70,7 @@ class Statistics{
 	 * @return {Promise.<[{en: String, uid: String, data: *, date: Date}]>}
 	 */
 	getEvents({count = 30, fromDate, toDate, eventsFilter} = {}){
-		return this.eventsTracker.getEvents({count, fromDate, eventsFilter});
+		return this.eventsTracker.getEvents({count, fromDate, toDate, eventsFilter});
 	}
 }
 
