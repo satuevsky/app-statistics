@@ -1,4 +1,4 @@
-import {FETCHING, FETCH_OK, FETCH_FAIL, CLEAR_EVENTS} from '../constants/evetns-page';
+import {FETCHING, FETCH_OK, FETCH_FAIL, CLEAR_EVENTS, ALLOW_UPDATING} from '../constants/evetns-page';
 
 
 const initialState = {
@@ -7,6 +7,14 @@ const initialState = {
 		hasMore: true,
 		fetching: false,
 		error: false,
+	},
+	config: {
+		allowUpdating: true,
+		filter: {
+			eventName: false,
+			fromDate: false,
+			toDate: false,
+		},
 	}
 };
 
@@ -15,6 +23,7 @@ export default function countersPageReducer(state = initialState, action){
 	switch (action.type){
 		case FETCHING:
 			return {
+				...state,
 				events: {
 					...state.events,
 					fetching: true,
@@ -24,6 +33,7 @@ export default function countersPageReducer(state = initialState, action){
 
 		case FETCH_FAIL:
 			return {
+				...state,
 				events: {
 					...state.events,
 					fetching: false,
@@ -37,7 +47,6 @@ export default function countersPageReducer(state = initialState, action){
 
 			switch (pushTo){
 				case -1:
-
 					items = items.concat(oldItems); break;
 				case 1:
 					items = oldItems.concat(items); break;
@@ -68,6 +77,14 @@ export default function countersPageReducer(state = initialState, action){
 				}
 			};
 
+		case ALLOW_UPDATING:
+			return {
+				...state,
+				config: {
+					...state.config,
+					allowUpdating: action.payload.allowUpdating
+				}
+			};
 
 		default: return state;
 	}

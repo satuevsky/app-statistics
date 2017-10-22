@@ -22,9 +22,12 @@ class EventsPage extends React.Component{
 		fetching: PropTypes.bool,
 		hasMore: PropTypes.bool,
 		error: PropTypes.bool,
+		allowUpdating: PropTypes.bool,
 
 		clearEvents: PropTypes.func,
 		fetchNextEvents: PropTypes.func,
+		fetchNewEvents: PropTypes.func,
+		allowUpdating: PropTypes.func,
 	};
 
 	componentDidMount(){
@@ -32,10 +35,13 @@ class EventsPage extends React.Component{
 			this.props.fetchNextEvents();
 		}
 		window.addEventListener('scroll', this.handleScroll);
+
+		this.autoUpdating(true);
 	}
 	componentWillUnmount(){
 		window.removeEventListener('scroll', this.handleScroll);
 		this.props.clearEvents();
+		this.autoUpdating(false);
 	}
 
 	handleScroll = () => {
@@ -46,6 +52,17 @@ class EventsPage extends React.Component{
 
 		if(scrollHeight - (scrollTop + clientHeight) < (this.props.events.length < 60 ? 800 : 1600) && !this.props.fetching){
 			this.props.fetchNextEvents();
+		}
+
+		this.autoUpdating(scrollTop < 100);
+	};
+
+	autoUpdating = (enabled=true) => {
+		if(this.props.allowUpdating === enabled)return;
+		this.props.allowUpdating(enabled);
+		clearInterval(this._t);
+		if(enabled){
+			this._t = setInterval(this.props.fetchNewEvents, 3000);
 		}
 	};
 
