@@ -1,5 +1,21 @@
-import {FETCHING, FETCH_FAIL, FETCH_OK, CLEAR_EVENTS} from '../constants/evetns-page';
+import {FETCHING, FETCH_FAIL, FETCH_OK, CLEAR_EVENTS, ALLOW_UPDATING} from '../constants/evetns-page';
 import {api} from '../api';
+
+
+
+export function clearEvents(){
+	return async (dispatch) => {
+		dispatch({type: CLEAR_EVENTS});
+	}
+}
+
+export function allowUpdating(allow=true){
+	return async (dispatch, getState) => {
+		if(getState().eventsPage.config.allowUpdating !== allow){
+			dispatch({type: ALLOW_UPDATING, payload: {allowUpdating: allow}});
+		}
+	}
+}
 
 export function fetchNextEvents(){
 	return async (dispatch, getState) => {
@@ -23,28 +39,32 @@ export function fetchNextEvents(){
 	}
 }
 
-/*export function fetchNewEvents(){
+
+export function fetchNewEvents(){
 	return async (dispatch, getState) => {
-		let {items} = getState().eventsPage.events;
+		let {config} = getState().eventsPage;
+
+		if(!config.allowUpdating)return;
 
 		try {
-			let toDate = items.length && items[0].date,
-				events = await api('events.get', {toDate, count: 100});
+			let items = getState().eventsPage.events.items,
+				toDate = items.length && items[0].date,
+				newEvents = await api('events.get', {toDate, count: 100});
 
-			dispatch({
-				type: FETCH_OK,
-				payload: {...events, pushTo: -1}
-			});
+			let {events, config} = getState().eventsPage;
+
+			if(config.allowUpdating && toDate === (events.items.length && events.items[0].date)){
+				dispatch({
+					type: FETCH_OK,
+					payload: {
+						...newEvents,
+						pushTo: newEvents.items.length < 100 ? -1 : 0
+					}
+				});
+			}
 		}catch(e){
-			//dispatch({type: FETCH_FAIL});
+			dispatch({type: FETCH_FAIL});
 		}
-	}
-}*/
-
-
-export function clearEvents(){
-	return async (dispatch) => {
-		dispatch({type: CLEAR_EVENTS});
 	}
 }
 
