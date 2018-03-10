@@ -88,22 +88,26 @@ class Main extends React.Component{
 				</div>
 				<Divider />
 				<List>
-					<Link to={getRoutePath(COUNTERS)} >
-						<ListItem button onClick={this.handleDrawerToggle}>
-							<ListItemIcon>
-								<MessageIcon />
-							</ListItemIcon>
-							<ListItemText primary="Counters" />
-						</ListItem>
-					</Link>
-					<Link to={getRoutePath(EVENTS)}>
-						<ListItem button onClick={this.handleDrawerToggle}>
-							<ListItemIcon>
-								<DraftsIcon />
-							</ListItemIcon>
-							<ListItemText primary="Events" />
-						</ListItem>
-					</Link>
+                    <ListItem
+                        button
+                        onClick={this.handleDrawerToggle}
+                        component={props => <Link to={getRoutePath(COUNTERS)}{...props}/>}
+                    >
+                        <ListItemIcon>
+                            <MessageIcon />
+                        </ListItemIcon>
+                        <ListItemText primary="Counters" />
+                    </ListItem>
+                    <ListItem
+                        button
+                        onClick={this.handleDrawerToggle}
+                        component={props => <Link to={getRoutePath(EVENTS)} {...props}/>}
+                    >
+                        <ListItemIcon>
+                            <DraftsIcon />
+                        </ListItemIcon>
+                        <ListItemText primary="Events" />
+                    </ListItem>
 				</List>
 			</div>
 		</Drawer>
