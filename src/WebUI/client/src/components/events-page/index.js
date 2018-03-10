@@ -71,14 +71,14 @@ class EventsPage extends React.Component{
 			return <div className={this.props.classes.progress}><CircularProgress size={32}/></div>
 		}
 		if(this.props.error){
-			return <Typography type="subheading" color="error">Failed to retrieve data!</Typography>
+			return <Typography variant="subheading" color="error">Failed to retrieve data!</Typography>
 		}
 	}
 	renderEvents(){
 		let {events} = this.props;
 
 		if(!events.length && !this.props.fetching && !this.props.error){
-			return <Typography type="subheading">No data</Typography>
+			return <Typography variant="subheading">No data</Typography>
 		}
 
 		return <EventsList events={events}/>;

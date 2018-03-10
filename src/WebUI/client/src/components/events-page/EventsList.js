@@ -33,7 +33,7 @@ class EventList extends React.PureComponent{
 			if(!dayEvents)return;
 
 			days.push(<div key={currentDay}>
-				<Typography className={classes.dayTitle} type="body2" color="secondary">{new Date(currentDay).toLocaleString("en", dateFmt)}</Typography>
+				<Typography className={classes.dayTitle} variant="body2" color="secondary">{new Date(currentDay).toLocaleString("en", dateFmt)}</Typography>
 				<Paper className={classes.paper}>
 					<Table>
 						<TableHead>
