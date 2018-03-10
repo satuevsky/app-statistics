@@ -10,6 +10,8 @@ import DraftsIcon from 'material-ui-icons/Drafts';
 import MessageIcon from 'material-ui-icons/Message';
 import Typography from "material-ui/Typography";
 import {withStyles} from 'material-ui/styles';
+import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
+import theme from './theme';
 
 import {getRoutePath} from '../../utils/route-utils';
 import {COUNTERS, EVENTS} from '../../constants/route-paths';
@@ -61,10 +63,10 @@ class Main extends React.Component{
 	renderAppBar(classes){
 		return <AppBar className={classes.navRoot} position="fixed">
 			<Toolbar>
-				<IconButton className={classes.navIcon} color="contrast" aria-label="Menu" onClick={this.handleDrawerToggle}>
+				<IconButton className={classes.navIcon} color="secondary" aria-label="Menu" onClick={this.handleDrawerToggle}>
 					<MenuIcon />
 				</IconButton>
-				<Typography type="title" color="inherit">
+				<Typography variant="title" color="secondary">
 					AppStatistics
 				</Typography>
 			</Toolbar>
@@ -74,7 +76,7 @@ class Main extends React.Component{
 		return <Drawer
 			type="temporary"
 			classes={{paper: classes.drawerPaper}}
-			onRequestClose={this.handleDrawerToggle}
+			onClose={this.handleDrawerToggle}
 			open={this.state.open}
 			ModalProps={{
 				keepMounted: true, // Better open performance on mobile.
@@ -82,7 +84,7 @@ class Main extends React.Component{
 		>
 			<div>
 				<div className={classes.toolbarSpace} >
-					<Typography className={classes.drawerHeaderTyp} type="title" color="inherit">Menu</Typography>
+					<Typography className={classes.drawerHeaderTyp} variant="title" color="inherit">Menu</Typography>
 				</div>
 				<Divider />
 				<List>
@@ -109,18 +111,20 @@ class Main extends React.Component{
 	render(){
 		let {classes} = this.props;
 
-		return <div>
-			{this.renderAppBar(classes)}
-			{this.renderDrawer(classes)}
-			<div className={classes.toolbarSpace}/>
-			<main className={classes.main}>
-				<Switch>
-					<Route path={getRoutePath(COUNTERS)} component={CountersPage}/>
-					<Route path={getRoutePath(EVENTS)} component={EventsPage}/>
-					<Route  render={(props) => <Typography type="title">Not found 404!</Typography>}/>
-				</Switch>
-			</main>
-		</div>
+		return <MuiThemeProvider theme={theme}>
+			<div>
+				{this.renderAppBar(classes)}
+				{this.renderDrawer(classes)}
+				<div className={classes.toolbarSpace}/>
+				<main className={classes.main}>
+					<Switch>
+						<Route path={getRoutePath(COUNTERS)} component={CountersPage}/>
+						<Route path={getRoutePath(EVENTS)} component={EventsPage}/>
+						<Route  render={(props) => <Typography variant="title">Not found 404!</Typography>}/>
+					</Switch>
+				</main>
+			</div>
+		</MuiThemeProvider>
 	}
 }
 
