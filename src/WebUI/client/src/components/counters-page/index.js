@@ -1,3 +1,4 @@
+//@flow
 import React from 'react';
 import PropTypes from 'prop-types';
 import {withStyles} from 'material-ui/styles';
@@ -11,6 +12,7 @@ import Input, { InputLabel } from 'material-ui/Input';
 import { MenuItem } from 'material-ui/Menu';
 import { FormControl, FormHelperText } from 'material-ui/Form';
 import {m, h, d} from '../../constants/counters-page';
+import type {CountersPageConfig, CountersPageGroupIntervalType, CountersType} from "../../reducers/counters-page";
 
 
 
@@ -40,13 +42,15 @@ const styles = theme => ({
 });
 
 let configIntervals = {
-	keys: [h, d, 7*d, 30*d],
+	keys: ["m", "h", "D", "W", "M", "Y"],
 	values: {
-		[h]: {display: "Hour"},
-		[d]: {display: "Day"},
-		[7*d]: {display: "Week"},
-		[30*d]: {display: "Month"}
-	}
+        "m": {display: "Minute"},
+        "h": {display: "Hour"},
+		"D": {display: "Day"},
+		"W": {display: "Week"},
+        "M": {display: "Month"},
+        "Y": {display: "Year"}
+	},
 };
 
 function renderTime(ts, groupInterval){
@@ -73,26 +77,34 @@ function renderTime(ts, groupInterval){
 }
 
 
-class CountersPage extends React.Component{
-	static propTypes = {
-		counters: PropTypes.object,
-		counterNames: PropTypes.array,
-		fetching: PropTypes.bool,
-		error: PropTypes.any,
-		config: PropTypes.object,
+type CountersPageProps = {
+	counters: CountersType,
+	counterNames: string[],
+	counterTimes: number[],
+	fetching: boolean,
+	error: any,
+	config: CountersPageConfig,
+    classes: Object,
 
-		updateCounters: PropTypes.func,
-	};
+	updateCounters: (params: ?{
+	    groupInterval?: CountersPageGroupIntervalType,
+        showCount?: number,
+    }) => void,
+}
+
+class CountersPage extends React.Component<CountersPageProps>{
+	props: CountersPageProps;
+	_t: TimeoutID;
 
 	componentWillMount(){
 		this.props.updateCounters();
 	}
 	componentWillUnmount(){
-		clearTimeout(this._t);
+	    clearTimeout(this._t);
 	}
-	componentWillReceiveProps(props){
+	componentWillReceiveProps(props, _){
 		if(!props.fetching && !props.error && props.counters){
-			clearTimeout(this._t);
+            clearTimeout(this._t);
 			this._t = setTimeout(this.props.updateCounters, 1000);
 		}
 	}
@@ -127,16 +139,8 @@ class CountersPage extends React.Component{
 			return <Typography variant="title">Нет данных</Typography>
 		}*/
 
-		let {counters, counterNames, config, classes} = this.props,
-			{groupInterval, showCount} = config,
-			now = Math.floor(Date.now()/1000),
-			currentTimeGroup = now - now % groupInterval,
-			timeGroups = [];
-
-		while(timeGroups.length < showCount){
-			timeGroups.push(currentTimeGroup);
-			currentTimeGroup -= groupInterval;
-		}
+		let {counters, counterNames, counterTimes, config, classes} = this.props,
+			{groupInterval, showCount} = config;
 
 		return <div>
 			{this.renderConfig()}
@@ -145,7 +149,7 @@ class CountersPage extends React.Component{
 					<TableRow>
 						<TableCell className={classes.enCell}>Counter Names</TableCell>
 						{
-							timeGroups.map((gt) => <TableCell className={classes.cell} key={gt} dangerouslySetInnerHTML={{__html: renderTime(gt, groupInterval)}}/>)
+							counterTimes.map((ct) => <TableCell className={classes.cell} key={ct} dangerouslySetInnerHTML={{__html: renderTime(ct, groupInterval)}}/>)
 						}
 					</TableRow>
 				</TableHead>
@@ -157,7 +161,7 @@ class CountersPage extends React.Component{
 							return <TableRow key={cn}>
 								<TableCell className={classes.enCell}>{cn}</TableCell>
 								{
-									timeGroups.map(tg => {
+									counterTimes.map(tg => {
 										const value = counter.values[tg] || 0,
 											percent = Math.round(value/counter.maxValue*100) * 0.95,
 											percent2 = Math.min(percent + 12, 100);

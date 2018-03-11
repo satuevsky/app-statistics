@@ -9,6 +9,7 @@ function mapStateToProps({countersPage}){
 	return {
 		counters: countersPage.items.counters,
 		counterNames: countersPage.items.counterNames,
+		counterTimes: countersPage.items.counterTimes,
 		fetching: countersPage.items.fetching,
 		error: countersPage.items.error,
 		config: countersPage.config,

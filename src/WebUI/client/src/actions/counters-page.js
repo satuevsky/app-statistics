@@ -13,25 +13,26 @@ export function updateCounters({groupInterval, showCount} = {}){
 					showCount: showCount || config.showCount,
 				};
 
-			dispatch({type: UPDATING, payload: {config, isNewConfig}});
+			dispatch({type: UPDATING, data: {config, isNewConfig}});
 
 			try {
-				let toDate = getState().countersPage.items.lastGroupTime;
+				let params = {interval: config.groupInterval},
+					toDate = getState().countersPage.items.lastGroupTime;
 
 				if(!toDate){
-					let now = Math.floor(Date.now()/1000),
-						{groupInterval, showCount} = config,
-						lastGroupTime = now - now % groupInterval;
-					toDate = lastGroupTime - groupInterval*(showCount-1);
+					params.count = 7;
+				}else{
+					params.to_date = toDate;
 				}
 
-				let counters = await api('counters.get', {interval: config.groupInterval, toDate});
+				let response = await api('counters.get', params);
 
-				if(getState().countersPage.config === config)
+				if(getState().countersPage.config === config){
 					dispatch({
-						type: UPDATE_OK,
-						payload: {data: counters}
-					});
+                        type: UPDATE_OK,
+                        data: {response}
+                    });
+                }
 			}catch(e){
 				if(getState().countersPage.config === config)
 					dispatch({type: UPDATE_FAIL});
