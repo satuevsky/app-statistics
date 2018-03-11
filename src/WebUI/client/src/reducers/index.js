@@ -4,12 +4,12 @@ import countersPage from './counters-page';
 import eventsPage from './events-page';
 
 export type Action = {
-	type: string,
-	data: Object,
+    type: string,
+    data: Object,
 }
 
 export default combineReducers({
-	routing,
-	countersPage,
-	eventsPage
+    routing,
+    countersPage,
+    eventsPage
 });

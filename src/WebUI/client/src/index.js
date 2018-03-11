@@ -8,22 +8,22 @@ import store from './utils/store';
 
 syncHistoryWithStore(history, store);
 
-function render(){
-	let App = require('./App').default;
-	ReactDOM.render(
-		<Provider store={store}>
-			<BrowserRouter>
-				<App/>
-			</BrowserRouter>
-		</Provider>,
-		document.getElementById('root')
-	);
+function render() {
+    let App = require('./App').default;
+    ReactDOM.render(
+        <Provider store={store}>
+            <BrowserRouter>
+                <App/>
+            </BrowserRouter>
+        </Provider>,
+        document.getElementById('root')
+    );
 }
 
-if(module.hot) {
-	module.hot.accept('./App', () => {
-		render();
-	})
+if (module.hot) {
+    module.hot.accept('./App', () => {
+        render();
+    })
 }
 
 render();

@@ -1,4 +1,4 @@
 let Statistics = require('./src/Statistics'),
-	WebUI = require('./src/WebUI');
+    WebUI = require('./src/WebUI');
 
 module.exports = {Statistics, WebUI};
