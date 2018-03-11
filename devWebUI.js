@@ -6,8 +6,8 @@ let Statistics = require('./src/Statistics'),
 
 (async () => {
 	let db = await MongoClient.connect('mongodb://localhost:27017/statistics_test'),
-		st = new Statistics({db}),
-		webUI = new WebUI({statistics: st});
+        statistics = new Statistics({db, listenConsole: true}),
+		webUI = new WebUI({statistics});
 
 	webUI.listen(8181, () => console.log("WebUI started!"));
 
@@ -16,8 +16,19 @@ let Statistics = require('./src/Statistics'),
 	function trackRandomEvent(){
 		let eventName = eventNames[currentIndex];
 		currentIndex = (currentIndex + rand(5)) % eventNames.length;
-		st.track({eventName});
-		setTimeout(trackRandomEvent, rand(1000));
+        statistics.track({eventName, uid: rand(100000000), data: "some data " + rand(999)});
+
+		let r = rand(10);
+
+		/*if(r < 3){
+			console.error(1,3,["sa",1], {});
+		}else if(r < 5){
+			console.warn(1,3,["sa",1], {});
+		}else if(r < 7){
+			console.log(1,3,["sa",1], {});
+		}*/
+
+		setTimeout(trackRandomEvent, rand(2000));
 	}
 	function rand(n){
 		return Math.round(Math.random() * n);
