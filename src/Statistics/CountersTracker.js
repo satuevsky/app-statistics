@@ -34,8 +34,9 @@ function getGroupTime(group, {naturalTime = new Date(), groupOffset = 0} = {}) {
             groupTime.setUTCDate(groupTime.getUTCDate() + groupOffset);
             break;
         case intervals.week:
+            let day = (6 + groupTime.getUTCDay())%7; //starts on monday
             groupTime.setUTCHours(0, 0, 0, 0);
-            groupTime.setUTCDate(groupTime.getUTCDate() - groupTime.getUTCDay() + 1 + (groupOffset * 7));
+            groupTime.setUTCDate(groupTime.getUTCDate() - day + (groupOffset * 7));
             break;
         case intervals.month:
             groupTime.setUTCHours(0, 0, 0, 0);
