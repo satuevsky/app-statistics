@@ -101,14 +101,18 @@ class CountersTracker{
 	async getCounters({groupByInterval, groupsCount, toDate}){
 	    groupByInterval = normalizeGroupTimeInterval(groupByInterval);
         groupsCount = -(groupsCount || 7);
-        toDate = toDate || getGroupTime(groupByInterval, {groupOffset: groupsCount - 1});
+        toDate = toDate || getGroupTime(groupByInterval, {groupOffset: groupsCount+1});
 
 		let docs = await this.countersCollection
 				.find({_id: {$gte: new Date(toDate)}})
 				.sort({_id: -1})
 				.toArray(),
 			grouped = [],
-			lastGroup = {};
+			lastGroup = {
+		        time: Math.floor(getGroupTime(groupByInterval)/1000),
+                values: {},
+            },
+            currentGroupIndex = 0;
 
 		//add current counters to response
 		add({
@@ -120,15 +124,32 @@ class CountersTracker{
 
 		function add(doc){
 			let groupTime = Math.floor(getGroupTime(groupByInterval, {naturalTime: doc._id})/1000);
-			if(groupTime !== lastGroup.time){
-				lastGroup = {time: groupTime, values: {}};
-				grouped.push(lastGroup);
-			}
+
+			while (groupTime < lastGroup.time){
+			    currentGroupIndex++;
+                grouped.push(lastGroup);
+			    lastGroup = {
+			        time: Math.floor(getGroupTime(groupByInterval, {groupOffset: -currentGroupIndex})/1000),
+                    values: {},
+                }
+            }
+
 			Object.keys(doc.counters).forEach(key => {
 				let eventName = decodeEventName(key);
 				lastGroup.values[eventName] = (lastGroup.values[eventName] || 0) + doc.counters[key];
 			});
 		}
+
+		while (Math.floor(toDate/1000) < lastGroup.time){
+            currentGroupIndex++;
+            grouped.push(lastGroup);
+            lastGroup = {
+                time: Math.floor(getGroupTime(groupByInterval, {groupOffset: -currentGroupIndex})/1000),
+                values: {},
+            }
+        }
+
+        grouped.push(lastGroup);
 
 		return grouped;
 	}
