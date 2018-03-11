@@ -9,12 +9,12 @@ const
 class Statistics{
 	/**
 	 * @param {Object} db - Mongo database connection
-	 * @param {Number} [countersGroupTimeLapse=3600000] - Interval for grouping counters. By default one hour.
+	 * @param {string} [countersGroupTimeLapse="h"] - Interval for grouping counters. Can be one of "h", "d", "w", "m", "y".
 	 * @param {Number} [countersAutoFlushInterval=10000] - Interval between saving counters to db. By default 10 seconds.
 	 * @param {Number} [eventsExpire] - Number of seconds during which the event will be stored. By default, events will not be deleted.
 	 * @param {Boolean} [listenConsole=false] - If true then will be track console events. By default false.
 	 */
-	constructor({db, countersAutoFlushInterval=10000, countersGroupTimeLapse=h, eventsExpire, listenConsole=false}){
+	constructor({db, countersAutoFlushInterval=10000, countersGroupTimeLapse="h", eventsExpire, listenConsole=false}){
 		this.countersTracker = new CountersTracker({
 			db,
 			autoFlushInterval: countersAutoFlushInterval,
@@ -52,13 +52,13 @@ class Statistics{
 
 	/**
 	 * Get counters from database
-	 * @param {Number} [groupByInterval=3600000] - For grouping counters by time. One hour by default.
-	 * @param {Number} [toDate] - Returns groups before the specified date, but no more than 'groupsLimit'.
-	 * @param {Number} [groupsLimit=7] - For returns no more than the specified number of groups.
+	 * @param {string} [groupByInterval] - For grouping counters by time. One hour by default.
+	 * @param {Date} [toDate] - Returns groups before the specified date, but no more than 'groupsLimit'.
+	 * @param {Number} [groupsCount] - For returns no more than the specified number of groups.
 	 * @return {Promise.<[{date: Number, counters: Object}]>}
 	 */
-	getCounters({groupByInterval=h, toDate}={}){
-		return this.countersTracker.getCounters({groupByInterval, toDate});
+	getCounters({groupByInterval, groupsCount, toDate}={}){
+		return this.countersTracker.getCounters({groupByInterval, groupsCount, toDate});
 	}
 
 	/**

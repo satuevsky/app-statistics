@@ -72,7 +72,7 @@ class CountersTracker{
 		this.groupTimeInterval = normalizeGroupTimeInterval(groupTimeInterval);
 		this.autoFlushInterval = autoFlushInterval;
 		this.currentCounters = {
-			counters: new Map(),
+			counters: {},
 			hasNew: false,
 			time: getGroupTime(this.groupTimeInterval),
 		};
@@ -85,21 +85,21 @@ class CountersTracker{
 	 * @param {String} eventName - Event name
 	 */
 	trackEvent({eventName}){
-	    let currentValue = this.currentCounters.counters.get(eventName) || 0;
-		this.currentCounters.counters.set(eventName, currentValue + 1);
+	    let currentValue = this.currentCounters.counters[eventName] || 0;
+		this.currentCounters.counters[eventName] = currentValue + 1;
 		this.currentCounters.hasNew = true;
 	}
 
     /**
      * Get counters
-     * @param {string} groupByInterval - Group interval.
-     * @param {number} [groupsCount] - Limitation of the number of groups.
-     * @param {Date} [toDate] - Time of the last group. If not specified, it will be calculated based on groupsCount.
+     * @param {string} groupByInterval
+     * @param {number} [groupsCount]
+     * @param {Date} [toDate]
      * @return {Promise<Array>}
      */
 	async getCounters({groupByInterval, groupsCount, toDate}){
 	    groupByInterval = normalizeGroupTimeInterval(groupByInterval);
-        groupsCount = groupsCount || 7;
+        groupsCount = -(groupsCount || 7);
         toDate = toDate || getGroupTime(groupByInterval, {groupOffset: groupsCount - 1});
 
 		let docs = await this.countersCollection
@@ -118,7 +118,7 @@ class CountersTracker{
 		docs.forEach(add);
 
 		function add(doc){
-			let groupTime = Math.floor(getGroupTime(groupByInterval, doc._id)/1000);
+			let groupTime = Math.floor(getGroupTime(groupByInterval, {naturalTime: doc._id})/1000);
 			if(groupTime !== lastGroup.time){
 				lastGroup = {time: groupTime, values: {}};
 				grouped.push(lastGroup);
@@ -149,8 +149,8 @@ class CountersTracker{
 
 		function encodeCounters(counters){
 		    let encoded = {};
-		    counters.forEach((value, key) => {
-                encoded["counters." + encodeEventName(key)] = value;
+		    Object.keys(counters).forEach((key) => {
+                encoded["counters." + encodeEventName(key)] = counters[key];
             });
 			return encoded;
 		}
