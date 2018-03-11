@@ -2,20 +2,55 @@ const s = 1000,
 	  m = s*60,
 	  h = m*60;
 
+const intervals = {
+    minute: "m",
+    hour: "h",
+    day: "D",
+    week: "W",
+    month: "M",
+    year: "Y",
+};
 
 function normalizeGroupTimeInterval(time){
-	if(!time)return h;
-	if(!Number.isInteger(time) || time < 1000){
-		throw new Error("groupTimeInterval must be integer and not less then 1000 (one second)");
+	if(!time)return intervals.hour;
+	let times = Object.keys(intervals).map(key => intervals[key]);
+	if(!times.includes(time)){
+		throw new Error(`groupTimeInterval must be on of [${times.join(", ")}]`);
 	}
 	return time;
 }
-function getCurrentGroupTime(groupTimeInterval){
-	let now = new Date();
-	return now - now % groupTimeInterval;
+function getGroupTime(group, {naturalTime = new Date(), groupOffset = 0} = {}) {
+    let groupTime = new Date(naturalTime);
+
+    switch (group) {
+        case intervals.minute:
+            groupTime.setUTCHours(groupTime.getUTCHours(), groupTime.getUTCMinutes() + groupOffset, 0, 0);
+            break;
+        case intervals.hour:
+            groupTime.setUTCHours(groupTime.getUTCHours() + groupOffset, 0, 0, 0);
+            break;
+        case intervals.day:
+            groupTime.setUTCHours(0, 0, 0, 0);
+            groupTime.setUTCDate(groupTime.getUTCDate() + groupOffset);
+            break;
+        case intervals.week:
+            groupTime.setUTCHours(0, 0, 0, 0);
+            groupTime.setUTCDate(groupTime.getUTCDate() - groupTime.getUTCDay() + 1 + (groupOffset * 7));
+            break;
+        case intervals.month:
+            groupTime.setUTCHours(0, 0, 0, 0);
+            groupTime.setUTCMonth(groupTime.getUTCMonth() + groupOffset, 1);
+            break;
+        case intervals.year:
+            groupTime.setUTCHours(0, 0, 0, 0);
+            groupTime.setUTCFullYear(groupTime.getUTCFullYear() + groupOffset, 0, 1);
+            break;
+    }
+
+    return groupTime;
 }
 function setNextAutoFlushTimeout(self){
-	let nextGroupTime = self.currentCounters.time + self.groupTimeInterval,
+	let nextGroupTime = getGroupTime(self.groupTimeInterval, {groupOffset: +1}),
 		nextAutoFlushTimeout = Math.min(nextGroupTime - Date.now(), self.autoFlushInterval);
 
 	setTimeout(() => {
@@ -23,7 +58,6 @@ function setNextAutoFlushTimeout(self){
 		setNextAutoFlushTimeout(self);
 	}, nextAutoFlushTimeout)
 }
-
 function encodeEventName(eventName){
 	return eventName.replace(/(\.)/g, "&2e").replace(/^(\$)/, "&24")
 }
@@ -32,16 +66,15 @@ function decodeEventName(eventName){
 }
 
 
-
 class CountersTracker{
-	constructor({db, groupTimeInterval=h, autoFlushInterval=10*s}) {
+	constructor({db, groupTimeInterval, autoFlushInterval=10*s}) {
 		this.countersCollection = db.collection('app_statistics_counters');
 		this.groupTimeInterval = normalizeGroupTimeInterval(groupTimeInterval);
 		this.autoFlushInterval = autoFlushInterval;
 		this.currentCounters = {
-			counters: {},
+			counters: new Map(),
 			hasNew: false,
-			time: getCurrentGroupTime(this.groupTimeInterval),
+			time: getGroupTime(this.groupTimeInterval),
 		};
 
 		setNextAutoFlushTimeout(this);
@@ -52,20 +85,22 @@ class CountersTracker{
 	 * @param {String} eventName - Event name
 	 */
 	trackEvent({eventName}){
-		this.currentCounters.counters[eventName] = (this.currentCounters.counters[eventName] || 0) + 1;
+	    let currentValue = this.currentCounters.counters.get(eventName) || 0;
+		this.currentCounters.counters.set(eventName, currentValue + 1);
 		this.currentCounters.hasNew = true;
 	}
 
-
-	async getCounters({groupByInterval, toDate}){
-		let now = Date.now(),
-			lastGroupTime = now - now % groupByInterval,
-			toDateDiff = lastGroupTime - toDate,
-			groupsCount = (toDateDiff / groupByInterval);
-
-		if(groupsCount > 30){
-			toDate = lastGroupTime - groupByInterval * 30;
-		}
+    /**
+     * Get counters
+     * @param {string} groupByInterval - Group interval.
+     * @param {number} [groupsCount] - Limitation of the number of groups.
+     * @param {Date} [toDate] - Time of the last group. If not specified, it will be calculated based on groupsCount.
+     * @return {Promise<Array>}
+     */
+	async getCounters({groupByInterval, groupsCount, toDate}){
+	    groupByInterval = normalizeGroupTimeInterval(groupByInterval);
+        groupsCount = groupsCount || 7;
+        toDate = toDate || getGroupTime(groupByInterval, {groupOffset: groupsCount - 1});
 
 		let docs = await this.countersCollection
 				.find({_id: {$gte: new Date(toDate)}})
@@ -83,7 +118,7 @@ class CountersTracker{
 		docs.forEach(add);
 
 		function add(doc){
-			let groupTime = Math.floor((doc._id - doc._id % groupByInterval)/1000);
+			let groupTime = Math.floor(getGroupTime(groupByInterval, doc._id)/1000);
 			if(groupTime !== lastGroup.time){
 				lastGroup = {time: groupTime, values: {}};
 				grouped.push(lastGroup);
@@ -106,25 +141,23 @@ class CountersTracker{
 				{_id: new Date(this.currentCounters.time)},
 				{$inc: encodeCounters(this.currentCounters.counters)},
 				{upsert: true}
-			);
+			).catch(console.error);
 
 			this.currentCounters.counters = {};
 			this.currentCounters.hasNew = false;
 		}
 
 		function encodeCounters(counters){
-			return Object.keys(counters).reduce((encoded, key)=>{
-				encoded["counters." + encodeEventName(key)] = counters[key];
-				return encoded;
-			}, {});
+		    let encoded = {};
+		    counters.forEach((value, key) => {
+                encoded["counters." + encodeEventName(key)] = value;
+            });
+			return encoded;
 		}
 
-
-		let currentGroupTime = getCurrentGroupTime(this.groupTimeInterval);
-		if(this.currentCounters.time !== currentGroupTime){
-			this.currentCounters.time = currentGroupTime;
-		}
+        this.currentCounters.time = getGroupTime(this.groupTimeInterval);
 	}
 }
+
 
 module.exports = CountersTracker;
