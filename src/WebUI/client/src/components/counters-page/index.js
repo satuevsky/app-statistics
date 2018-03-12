@@ -9,8 +9,8 @@ import Paper from 'material-ui/Paper';
 import Select from 'material-ui/Select';
 import {MenuItem} from 'material-ui/Menu';
 import {FormControl} from 'material-ui/Form';
-import {d, h, m} from '../../constants/counters-page';
 import type {CountersPageConfig, CountersPageGroupIntervalType, CountersType} from "../../reducers/counters-page";
+import moment from 'moment';
 
 
 const styles = theme => ({
@@ -51,26 +51,21 @@ let configIntervals = {
 };
 
 function renderTime(ts, groupInterval) {
-    let now = new Date(),
-        date = new Date(ts * 1000),
-        fmt = {};
-
-    if (groupInterval < m)
-        fmt.second = "numeric";
-    if (groupInterval < d) {
-        fmt.minute = "numeric";
-        fmt.hour = "numeric";
-        if (now.getDate() !== date.getDate() || now - date > d * 1000) {
-            fmt.day = "numeric";
-            fmt.month = "numeric";
-            fmt.year = "numeric";
-        }
-    } else {
-        fmt.day = "numeric";
-        fmt.month = "numeric";
-        fmt.year = "numeric";
+    ts = ts * 1000;
+    switch (groupInterval) {
+        case "m":
+            return moment(ts).calendar(null, {sameDay: "LT"});
+        case "h":
+            return moment(ts).calendar(null, {sameDay: "LT"});
+        case "D":
+            return moment(ts).format("L");
+        case "W":
+            return moment(ts).format("L");
+        case "M":
+            return moment(ts).format("MMMM YYYY");
+        case "Y":
+            return moment(ts).format("YYYY");
     }
-    return date.toLocaleString("ru", fmt).replace(',', '</br>');
 }
 
 

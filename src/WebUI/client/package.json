@@ -18,6 +18,7 @@
     "history": "^4.7.2",
     "material-ui": "^1.0.0-beta.36",
     "material-ui-icons": "^1.0.0-beta.36",
+    "moment": "^2.21.0",
     "prop-types": "^15.6.0",
     "react-redux": "^5.0.6",
     "react-router-dom": "^4.2.2",
