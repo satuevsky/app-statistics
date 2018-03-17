@@ -26,10 +26,11 @@ function configureExpress(self) {
 }
 
 
-function WebUI({statistics, expressApp} = {}) {
+function WebUI({statistics, expressApp, counterGroups = []} = {}) {
     const self = expressApp || express();
 
     self.statistics = statistics;
+    self.counterGroups = counterGroups;
     configureExpress(self);
 
     return self;

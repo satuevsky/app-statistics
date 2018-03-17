@@ -1,10 +1,12 @@
-import {SET_CONFIG, UPDATE_FAIL, UPDATE_OK, UPDATING} from '../constants/counters-page';
+import {UPDATE_FAIL, UPDATE_OK, UPDATING} from '../constants/counters-page';
 import {api} from '../api';
 
 export function updateCounters({groupInterval, showCount} = {}) {
     return async (dispatch, getState) => {
         let {config, items} = getState().countersPage,
-            isNewConfig = (groupInterval && groupInterval !== config.groupInterval) || (showCount && showCount !== config.showCount);
+            isNewConfig =
+                (groupInterval && groupInterval !== config.groupInterval) ||
+                (showCount && showCount !== config.showCount);
 
         if (isNewConfig || !items.fetching) {
             if (isNewConfig)
@@ -21,6 +23,7 @@ export function updateCounters({groupInterval, showCount} = {}) {
 
                 if (!toDate) {
                     params.count = 7;
+                    params.need_groups = true;
                 } else {
                     params.to_date = toDate;
                 }
@@ -34,8 +37,9 @@ export function updateCounters({groupInterval, showCount} = {}) {
                     });
                 }
             } catch (e) {
-                if (getState().countersPage.config === config)
+                if (getState().countersPage.config === config) {
                     dispatch({type: UPDATE_FAIL});
+                }
             }
         }
     }

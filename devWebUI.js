@@ -7,7 +7,19 @@ let Statistics = require('./src/Statistics'),
 (async () => {
     let db = await MongoClient.connect('mongodb://localhost:27017/statistics_test'),
         statistics = new Statistics({db, listenConsole: true}),
-        webUI = new WebUI({statistics});
+        webUI = new WebUI({
+            statistics,
+            counterGroups: [
+                {
+                    name: "detection",
+                    items: ["detect_ok", "detect_fail"]
+                },
+                {
+                    name: "app_starting",
+                    items: ["app_start", "app_start_ok", "app_start_fail"]
+                }
+            ]
+        });
 
     webUI.listen(8181, () => console.log("WebUI started!"));
 

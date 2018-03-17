@@ -9,6 +9,7 @@ module.exports = new Method('counters.get', {
             to_date: Number,
             //get groups count limit
             count: Number,
+            need_groups: Boolean,
         }
     },
     async (req, res) => {
@@ -17,8 +18,14 @@ module.exports = new Method('counters.get', {
                 groupByInterval: req.params.interval,
                 toDate: req.params.to_date ? new Date(req.params.to_date * 1000) : null,
                 groupsCount: req.params.count,
-            });
-            res.ok(counters);
+                }),
+                result = {counters};
+
+            if (req.params.need_groups) {
+                result.counterGroups = req.context.counterGroups;
+            }
+
+            res.ok(result);
         } catch (e) {
             res.error(errors.unknownError);
         }
