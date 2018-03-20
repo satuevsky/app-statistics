@@ -4,7 +4,7 @@ import {UPDATE_FAIL, UPDATE_OK, UPDATING} from '../constants/counters-page';
 import type {Action} from "./index";
 
 
-export type CountersPageState = {
+export type CountersPageStateType = {
     items: CountersPageItems,
     config: CountersPageConfig,
 };
@@ -41,7 +41,7 @@ export type CountersPageConfig = {
 export type CountersPageGroupIntervalType = "m" | "h" | "D" | "W" | "M" | "Y";
 
 
-const initialState: CountersPageState = {
+const initialState: CountersPageStateType = {
     items: {
         _countersWithGroups: {},
         counters: null,
@@ -63,7 +63,7 @@ const initialState: CountersPageState = {
 };
 
 
-export default function countersPageReducer(state: CountersPageState = initialState, action: Action) {
+export default function countersPageReducer(state: CountersPageStateType = initialState, action: Action) {
     switch (action.type) {
 
         // Started downloading counters

@@ -46,11 +46,25 @@ const styles = theme => ({
         textAlign: "center",
         minWidth: 62,
     },
-    enCell: {
-        padding: 16,
-    },
     egCell: {
         padding: 0,
+    },
+    enCell: {
+        padding: 16,
+        backgroundColor: "#f1f1f1 !important",
+    },
+    groupCell: {
+        position: "relative",
+        padding: 8,
+        textAlign: "center",
+        minWidth: 62,
+    },
+    counterCell: {
+        position: "relative",
+        padding: 8,
+        textAlign: "center",
+        minWidth: 62,
+        backgroundColor: "#f1f1f1 !important",
     },
     groupButtonLabel: {
         fontWeight: 100,
@@ -163,18 +177,20 @@ class CountersPage extends React.Component<CountersPageProps, CountersPageState>
 
             if (expandedGroup) {
                 group.items.forEach(counterName => {
-                    let counter = counters[counterName];
+                    let counter = counters[counterName] || {};
                     rows.push(renderItem({
                         name: counterName,
-                        values: counter.values,
-                        maxValue: counter.maxValue,
+                        values: counter.values || {},
+                        maxValue: counter.maxValue || 0,
                         isGroup: false,
                     }));
                 });
                 if (!isWithoutGroup) {
-                    rows.push(<tr>
-                        <td style={{height: 8, background: "#f1f1f1"}} colspan={999}/>
-                    </tr>)
+                    rows.push(
+                        <tr key={group.name + ":tr"}>
+                            <td style={{height: 8}} colSpan={999}/>
+                        </tr>
+                    )
                 }
             }
         });
@@ -208,8 +224,8 @@ class CountersPage extends React.Component<CountersPageProps, CountersPageState>
                             percent2 = Math.min(percent + 12, 100);
                         return <TableCell
                             key={tg}
-                            className={classes.cell}
-                            style={{background: `linear-gradient(to top, ${indigo[50]} ${percent}%, rgba(255,255,255,0) ${percent2}%)`}}
+                            className={isGroup ? classes.groupCell : classes.counterCell}
+                            style={{background: `linear-gradient(to top, ${indigo["100"]} ${percent}%, rgba(255,255,255,0) ${percent2}%)`}}
                         >
                             {value}
                         </TableCell>
@@ -217,7 +233,6 @@ class CountersPage extends React.Component<CountersPageProps, CountersPageState>
                 }
             </TableRow>
         }
-
         function renderTime(ts, groupInterval) {
             ts = ts * 1000;
             switch (groupInterval) {
@@ -241,10 +256,15 @@ class CountersPage extends React.Component<CountersPageProps, CountersPageState>
             <Paper className={classes.countersPaper}><Table>
                 <TableHead>
                     <TableRow>
-                        <TableCell className={classes.enCell}>Counter Names</TableCell>
+                        <TableCell className={classes.groupCell}>Counter Names</TableCell>
                         {
-                            counterTimes.map((ct) => <TableCell className={classes.cell} key={ct}
-                                                                dangerouslySetInnerHTML={{__html: renderTime(ct, groupInterval)}}/>)
+                            counterTimes.map((ct) => {
+                                return <TableCell
+                                    key={ct}
+                                    className={classes.cell}
+                                    dangerouslySetInnerHTML={{__html: renderTime(ct, groupInterval)}}
+                                />
+                            })
                         }
                     </TableRow>
                 </TableHead>
