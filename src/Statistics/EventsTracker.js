@@ -49,6 +49,7 @@ class EventsTracker {
         return (await this.eventsCollection
             .find(query)
             .sort({date: -1})
+            .project({_id: 0})
             .limit(count)
             .toArray())
             .map(e => {
