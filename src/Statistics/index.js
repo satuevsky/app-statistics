@@ -66,11 +66,11 @@ class Statistics {
      * @param {Number} [count=30]
      * @param {Number} fromDate
      * @param {Number} toDate
-     * @param {String} eventsFilter
+     * @param {String[]} eventNames
      * @return {Promise.<[{en: String, uid: String, data: *, date: Date}]>}
      */
-    getEvents({count = 30, fromDate, toDate, eventsFilter} = {}) {
-        return this.eventsTracker.getEvents({count, fromDate, toDate, eventsFilter});
+    getEvents({count = 30, fromDate, toDate, eventNames} = {}) {
+        return this.eventsTracker.getEvents({count, fromDate, toDate, eventNames});
     }
 }
 

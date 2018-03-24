@@ -29,10 +29,12 @@ class EventsTracker {
     }
 
 
-    async getEvents({count, fromDate, toDate, eventsFilter}) {
+    async getEvents({count, fromDate, toDate, eventNames}) {
         let query = {};
-        if (eventsFilter) {
-            query.en = eventsFilter;
+        if (eventNames) {
+            query.en = {
+                $in: eventNames
+            };
         }
         if (fromDate || toDate) {
             query.date = {};
