@@ -1,6 +1,6 @@
 import React from 'react';
 import {Route} from 'react-router-dom';
-import Main from './components/main';
+import Main from './containers/main';
 import './style.css';
 
 export default function App() {

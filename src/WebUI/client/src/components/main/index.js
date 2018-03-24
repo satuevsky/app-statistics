@@ -1,3 +1,4 @@
+//flow
 import React from 'react';
 import AppBar from 'material-ui/AppBar';
 import Toolbar from 'material-ui/Toolbar';
@@ -100,7 +101,10 @@ class Main extends React.Component {
                     </ListItem>
                     <ListItem
                         button
-                        onClick={this.handleDrawerToggle}
+                        onClick={() => {
+                            this.props.setFilter();
+                            this.handleDrawerToggle();
+                        }}
                         component={props => <Link to={getRoutePath(EVENTS)} {...props}/>}
                     >
                         <ListItemIcon>
@@ -125,7 +129,7 @@ class Main extends React.Component {
                     <Switch>
                         <Route path={getRoutePath(COUNTERS)} component={CountersPage}/>
                         <Route path={getRoutePath(EVENTS)} component={EventsPage}/>
-                        <Route render={(props) => <Typography variant="title">Not found 404!</Typography>}/>
+                        <Route render={() => <Typography variant="title">Not found 404!</Typography>}/>
                     </Switch>
                 </main>
             </div>
