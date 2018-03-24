@@ -1,5 +1,12 @@
 //@flow
-import {ALLOW_UPDATING, CLEAR_EVENTS, FETCH_FAIL, FETCH_OK, FETCHING} from '../constants/evetns-page';
+import {
+    ALLOW_UPDATING,
+    CLEAR_EVENTS,
+    EVENTS_FETCH_FAIL,
+    EVENTS_FETCH_OK,
+    EVENTS_FETCHING,
+    EVENTS_SET_FILTER
+} from '../constants/evetns-page';
 import {api} from '../api';
 import type {EventsPageStateType} from "../reducers/events-page";
 import type {RootState} from "../reducers";
@@ -14,8 +21,20 @@ export function clearEvents() {
 export function allowUpdating(allow: boolean = true) {
     return async (dispatch: *, getState: () => RootState) => {
         if (getState().eventsPage.config.allowUpdating !== allow) {
-            dispatch({type: ALLOW_UPDATING, data: {allowUpdating: allow}});
+            dispatch({
+                type: ALLOW_UPDATING,
+                data: {allowUpdating: allow}
+            });
         }
+    }
+}
+
+export function setFilter(params?: { fromDate: number, toDate: number, eventNames: string[] }) {
+    return async (dispatch: *, getState: () => RootState) => {
+        dispatch({
+            type: EVENTS_SET_FILTER,
+            data: params || {},
+        });
     }
 }
 
@@ -32,16 +51,21 @@ export function fetchNextEvents() {
         if (fetching || !hasMore) return;
         if (toDate != null && fromDate != null && fromDate < toDate) return;
 
-        dispatch({type: FETCHING});
+        dispatch({type: EVENTS_FETCHING});
+
+        let params: Object = {count: 30};
+        if (fromDate) params.from_date = fromDate;
+        if (toDate) params.to_date = toDate;
+        if (eventNames) params.event_names = eventNames.join(",");
 
         try {
-            events = await api('events.get', {fromDate, count: 30});
+            events = await api('events.get', params);
             dispatch({
-                type: FETCH_OK,
+                type: EVENTS_FETCH_OK,
                 data: {...events, pushTo: 1}
             });
         } catch (e) {
-            dispatch({type: FETCH_FAIL});
+            dispatch({type: EVENTS_FETCH_FAIL});
         }
     }
 }
@@ -49,20 +73,25 @@ export function fetchNextEvents() {
 
 export function fetchNewEvents() {
     return async (dispatch: *, getState: () => RootState) => {
-        let {config} = getState().eventsPage;
+        let {config} = getState().eventsPage,
+            {eventNames} = config.filter;
 
         if (!config.allowUpdating) return;
 
         try {
             let items = getState().eventsPage.events.items,
                 toDate = items.length && items[0].date,
-                newEvents = await api('events.get', {toDate, count: 100});
+                newEvents = await api('events.get', {
+                    count: 100,
+                    to_date: toDate,
+                    event_names: eventNames && eventNames.join(",")
+                });
 
             let {events, config} = getState().eventsPage;
 
             if (config.allowUpdating && toDate === (events.items.length && events.items[0].date)) {
                 dispatch({
-                    type: FETCH_OK,
+                    type: EVENTS_FETCH_OK,
                     data: {
                         ...newEvents,
                         pushTo: newEvents.items.length < 100 ? -1 : 0
@@ -70,7 +99,7 @@ export function fetchNewEvents() {
                 });
             }
         } catch (e) {
-            dispatch({type: FETCH_FAIL});
+            dispatch({type: EVENTS_FETCH_FAIL});
         }
     }
 }

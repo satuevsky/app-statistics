@@ -1,6 +1,13 @@
 //@flow
 
-import {ALLOW_UPDATING, CLEAR_EVENTS, FETCH_FAIL, FETCH_OK, FETCHING} from '../constants/evetns-page';
+import {
+    ALLOW_UPDATING,
+    CLEAR_EVENTS,
+    EVENTS_FETCH_FAIL,
+    EVENTS_FETCH_OK,
+    EVENTS_FETCHING,
+    EVENTS_SET_FILTER,
+} from '../constants/evetns-page';
 import type {Action} from "./index";
 
 
@@ -41,7 +48,7 @@ const initialState: EventsPageStateType = {
 
 export default function countersPageReducer(state: EventsPageStateType = initialState, action: Action) {
     switch (action.type) {
-        case FETCHING:
+        case EVENTS_FETCHING:
             return {
                 ...state,
                 events: {
@@ -51,7 +58,7 @@ export default function countersPageReducer(state: EventsPageStateType = initial
                 },
             };
 
-        case FETCH_FAIL:
+        case EVENTS_FETCH_FAIL:
             return {
                 ...state,
                 events: {
@@ -61,7 +68,7 @@ export default function countersPageReducer(state: EventsPageStateType = initial
                 }
             };
 
-        case FETCH_OK: {
+        case EVENTS_FETCH_OK: {
             let {items, hasMore, pushTo} = action.data,
                 oldItems = state.events.items;
 
@@ -105,6 +112,19 @@ export default function countersPageReducer(state: EventsPageStateType = initial
                 config: {
                     ...state.config,
                     allowUpdating: action.data.allowUpdating
+                }
+            };
+
+        case EVENTS_SET_FILTER:
+            return {
+                ...state,
+                config: {
+                    ...state.config,
+                    filter: {
+                        toDate: action.data.toDate,
+                        fromDate: action.data.fromDate,
+                        eventNames: action.data.eventNames,
+                    }
                 }
             };
 

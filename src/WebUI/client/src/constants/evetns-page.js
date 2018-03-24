@@ -1,7 +1,7 @@
-export const FETCHING = "FETCHING";
-export const FETCH_OK = "FETCH_OK";
-export const FETCH_FAIL = "FETCH_FAIL";
+export const EVENTS_FETCHING = "EVENTS_FETCHING";
+export const EVENTS_FETCH_OK = "EVENTS_FETCH_OK";
+export const EVENTS_FETCH_FAIL = "EVENTS_FETCH_FAIL";
 
 export const CLEAR_EVENTS = "CLEAR_EVENTS";
-
 export const ALLOW_UPDATING = "ALLOW_UPDATING";
+export const EVENTS_SET_FILTER = "EVENTS_SET_FILTER";
