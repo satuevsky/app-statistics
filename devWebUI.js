@@ -12,7 +12,7 @@ let Statistics = require('./src/Statistics'),
             counterGroups: [
                 {
                     name: "detection",
-                    items: ["detect_ok", "detect_fail"]
+                    items: ["detect_ok", "detect_fail", "detect_fail2"]
                 },
                 {
                     name: "app_starting",
