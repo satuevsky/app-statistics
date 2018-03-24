@@ -14,7 +14,7 @@ export function clearEvents() {
 export function allowUpdating(allow: boolean = true) {
     return async (dispatch: *, getState: () => RootState) => {
         if (getState().eventsPage.config.allowUpdating !== allow) {
-            dispatch({type: ALLOW_UPDATING, payload: {allowUpdating: allow}});
+            dispatch({type: ALLOW_UPDATING, data: {allowUpdating: allow}});
         }
     }
 }
