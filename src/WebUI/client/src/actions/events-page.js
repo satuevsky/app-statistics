@@ -74,9 +74,9 @@ export function fetchNextEvents() {
 export function fetchNewEvents() {
     return async (dispatch: *, getState: () => RootState) => {
         let {config} = getState().eventsPage,
-            {eventNames} = config.filter;
+            {eventNames, toDate, fromDate} = config.filter;
 
-        if (!config.allowUpdating) return;
+        if (!config.allowUpdating || fromDate) return;
 
         try {
             let items = getState().eventsPage.events.items,
