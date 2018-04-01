@@ -23,49 +23,76 @@ class EventList extends React.PureComponent {
     };
 
     render() {
-        let {events, classes} = this.props;
+        let {events, classes, title} = this.props;
 
-        let days = [],
-            currentDay = null,
-            dayEvents = null;
-
-        function pushDay() {
-            if (!dayEvents) return;
-
-            days.push(<div key={currentDay}>
-                <Typography className={classes.dayTitle}
-                            variant="body2">{new Date(currentDay).toLocaleString("en", dateFmt)}</Typography>
-                <Paper className={classes.paper}>
-                    <Table>
-                        <TableHead>
-                            <TableRow>
-                                <TableCell>Time</TableCell>
-                                <TableCell>Event name</TableCell>
-                                <TableCell>UserId</TableCell>
-                                <TableCell>Data</TableCell>
-                            </TableRow>
-                        </TableHead>
-                        <TableBody>
-                            {dayEvents.map(e => <EventRow key={e.date + e.uid} event={e}/>)}
-                        </TableBody>
-                    </Table>
-                </Paper>
-            </div>)
-        }
-
-        for (let i = 0; i < events.length; i++) {
-            let event = events[i];
-            if (currentDay !== new Date(event.date).setHours(0, 0, 0, 0)) {
-                pushDay();
-                currentDay = new Date(event.date).setHours(0, 0, 0, 0);
-                dayEvents = [];
-            }
-            dayEvents.push(event);
-        }
-        pushDay();
-
-        return <div>{days}</div>;
+        return <div>
+            <Typography className={classes.dayTitle} variant="body2">
+                {title}
+            </Typography>
+            <Paper className={classes.paper}>
+                <Table>
+                    <TableHead>
+                        <TableRow>
+                            <TableCell>Time</TableCell>
+                            <TableCell>Event name</TableCell>
+                            <TableCell>UserId</TableCell>
+                            <TableCell>Data</TableCell>
+                        </TableRow>
+                    </TableHead>
+                    <TableBody>
+                        {
+                            events.map(e => <EventRow key={e.date + e.uid} event={e}/>)
+                        }
+                    </TableBody>
+                </Table>
+            </Paper>
+        </div>;
     }
+
+    // render() {
+    //     let {events, classes} = this.props;
+    //
+    //     let days = [],
+    //         currentDay = null,
+    //         dayEvents = null;
+    //
+    //     function pushDay() {
+    //         if (!dayEvents) return;
+    //
+    //         days.push(<div key={currentDay}>
+    //             <Typography className={classes.dayTitle}
+    //                         variant="body2">{new Date(currentDay).toLocaleString("en", dateFmt)}</Typography>
+    //             <Paper className={classes.paper}>
+    //                 <Table>
+    //                     <TableHead>
+    //                         <TableRow>
+    //                             <TableCell>Time</TableCell>
+    //                             <TableCell>Event name</TableCell>
+    //                             <TableCell>UserId</TableCell>
+    //                             <TableCell>Data</TableCell>
+    //                         </TableRow>
+    //                     </TableHead>
+    //                     <TableBody>
+    //                         {dayEvents.map(e => <EventRow key={e.date + e.uid} event={e}/>)}
+    //                     </TableBody>
+    //                 </Table>
+    //             </Paper>
+    //         </div>)
+    //     }
+    //
+    //     for (let i = 0; i < events.length; i++) {
+    //         let event = events[i];
+    //         if (currentDay !== new Date(event.date).setHours(0, 0, 0, 0)) {
+    //             pushDay();
+    //             currentDay = new Date(event.date).setHours(0, 0, 0, 0);
+    //             dayEvents = [];
+    //         }
+    //         dayEvents.push(event);
+    //     }
+    //     pushDay();
+    //
+    //     return <div>{days}</div>;
+    // }
 }
 
 export default withStyles(styles)(EventList);

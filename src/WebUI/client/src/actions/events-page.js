@@ -29,8 +29,10 @@ export function allowUpdating(allow: boolean = true) {
     }
 }
 
-export function setFilter(params?: { fromDate: number, toDate: number, eventNames: string[] }) {
-    return async (dispatch: *, getState: () => RootState) => {
+export type EventsSetFilterParams = { fromDate: number, toDate: number, eventNames: string[] }
+
+export function setFilter(params?: EventsSetFilterParams) {
+    return async (dispatch: *) => {
         dispatch({
             type: EVENTS_SET_FILTER,
             data: params || {},

@@ -1,10 +1,10 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 
 import {withStyles} from 'material-ui/styles';
 import Typography from 'material-ui/Typography'
 import {CircularProgress} from 'material-ui/Progress';
 import EventsList from './EventsList';
+import moment from "moment";
 
 
 const styles = theme => ({
@@ -14,23 +14,25 @@ const styles = theme => ({
     }
 });
 
-class EventsPage extends React.Component {
-    static propTypes = {
-        events: PropTypes.array,
-        fetching: PropTypes.bool,
-        hasMore: PropTypes.bool,
-        error: PropTypes.bool,
+type EventsPageProps = {
+    events: Object[],
+    fetching: boolean,
+    hasMore: boolean,
+    error: any,
+    classes: Object,
 
-        clearEvents: PropTypes.func,
-        fetchNextEvents: PropTypes.func,
-        fetchNewEvents: PropTypes.func,
-        allowUpdating: PropTypes.func,
-    };
+    clearEvents: () => void,
+    fetchNextEvents: () => void,
+    fetchNewEvents: () => void,
+    allowUpdating: () => void,
+}
+
+class EventsPage extends React.Component<EventsPageProps> {
+    props: EventsPageProps;
+
     handleScroll = () => {
         let {scrollHeight, clientHeight} = document.body.parentNode,
             scrollTop = window.pageYOffset;
-
-        //alert(JSON.stringify({scrollTop, scrollHeight, clientHeight}));
 
         if (scrollHeight - (scrollTop + clientHeight) < (this.props.events.length < 60 ? 800 : 1600) && !this.props.fetching) {
             this.props.fetchNextEvents();
@@ -72,13 +74,28 @@ class EventsPage extends React.Component {
     }
 
     renderEvents() {
-        let {events} = this.props;
+        let {events, filter} = this.props,
+            {eventNames, fromDate, toDate} = filter,
+            title = "Events: ";
+
+        if (eventNames && eventNames.length) {
+            title += eventNames.join(", ");
+        } else {
+            title += "All";
+        }
+
+        if (toDate) {
+            title += ". From " + moment(toDate).calendar();
+        }
+        if (fromDate) {
+            title += ". To " + moment(fromDate).calendar();
+        }
 
         if (!events.length && !this.props.fetching && !this.props.error) {
             return <Typography variant="subheading">No data</Typography>
         }
 
-        return <EventsList events={events}/>;
+        return <EventsList events={events} title={title}/>;
     }
 
     render() {
