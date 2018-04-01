@@ -124,7 +124,13 @@ export default function countersPageReducer(state: EventsPageStateType = initial
                         toDate: action.data.toDate,
                         fromDate: action.data.fromDate,
                         eventNames: action.data.eventNames,
-                    }
+                    },
+                    events: {
+                        items: [],
+                        fetching: false,
+                        hasMore: true,
+                        error: null
+                    },
                 }
             };
 

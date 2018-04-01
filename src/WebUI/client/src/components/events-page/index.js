@@ -20,7 +20,6 @@ class EventsPage extends React.Component {
         fetching: PropTypes.bool,
         hasMore: PropTypes.bool,
         error: PropTypes.bool,
-        allowUpdating: PropTypes.bool,
 
         clearEvents: PropTypes.func,
         fetchNextEvents: PropTypes.func,
