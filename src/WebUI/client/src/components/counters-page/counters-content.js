@@ -8,6 +8,9 @@ import Button from 'material-ui/Button';
 import {MenuItem} from 'material-ui/Menu';
 import {FormControl} from 'material-ui/Form';
 import ExpandMore from 'material-ui-icons/ExpandMore';
+import {Link} from 'react-router-dom';
+
+import {getGroupTime} from '../../utils/time';
 
 
 const configIntervals = {
@@ -108,9 +111,12 @@ function CountersTableBody(props) {
                     values={group.values}
                     maxValue={group.maxValue}
                     isGroup={true}
+                    groupItems={group.items}
                     classes={classes}
                     counterTimes={counterTimes}
                     onExpandGroup={onExpandGroup}
+                    groupInterval={groupInterval}
+                    setFilter={props.setFilter}
                 />
             );
             expandedGroup = expandedGroupName === group.name;
@@ -128,6 +134,8 @@ function CountersTableBody(props) {
                         isGroup={false}
                         classes={classes}
                         counterTimes={counterTimes}
+                        groupInterval={groupInterval}
+                        setFilter={props.setFilter}
                     />
                 )
             });
@@ -146,7 +154,7 @@ function CountersTableBody(props) {
     </TableBody>
 }
 
-function CountersTableRow({name, values, maxValue, isGroup, classes, counterTimes, onExpandGroup}) {
+function CountersTableRow({name, values, maxValue, isGroup, groupItems, classes, counterTimes, onExpandGroup, groupInterval, setFilter}) {
     return <TableRow>
         <TableCell className={isGroup ? classes.egCell : classes.enCell}>
             {
@@ -168,14 +176,32 @@ function CountersTableRow({name, values, maxValue, isGroup, classes, counterTime
             counterTimes.map(tg => {
                 const value = values[tg] || 0,
                     percent = Math.round(value / maxValue * 100) * 0.95,
-                    percent2 = Math.min(percent + 12, 100);
+                    percent2 = Math.min(percent + 12, 100),
+                    toDate = tg * 1000,
+                    fromDate = getGroupTime(groupInterval, {naturalTime: toDate, groupOffset: 1}).getTime(),
+                    eventNames = isGroup ? groupItems : [name];
+
+
                 return (
                     <TableCell
                         key={tg}
                         className={isGroup ? classes.groupCell : classes.counterCell}
                         style={{background: `linear-gradient(to top, ${indigo["100"]} ${percent}%, rgba(255,255,255,0) ${percent2}%)`}}
                     >
-                        {value}
+                        <Link className={classes.counterCellLink} to={"/events"}>
+                            <div
+                                className={classes.counterCellLinkInner}
+                                onClick={() => {
+                                    setFilter({
+                                        eventNames,
+                                        fromDate,
+                                        toDate,
+                                    });
+                                }}
+                            >
+                                {value}
+                            </div>
+                        </Link>
                     </TableCell>
                 )
             })

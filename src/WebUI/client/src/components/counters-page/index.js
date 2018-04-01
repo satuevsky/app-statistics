@@ -11,6 +11,7 @@ import type {
     CountersPageGroupType,
     CountersType
 } from "../../reducers/counters-page";
+import type {EventsSetFilterParams} from "../../actions/events-page";
 
 
 const styles = theme => ({
@@ -34,16 +35,27 @@ const styles = theme => ({
     },
     groupCell: {
         position: "relative",
-        padding: 8,
+        padding: 0,
         textAlign: "center",
         minWidth: 62,
     },
     counterCell: {
         position: "relative",
-        padding: 8,
+        padding: 0,
         textAlign: "center",
         minWidth: 62,
         backgroundColor: "#f1f1f1 !important",
+    },
+    counterCellLink: {
+        textDecoration: "none",
+        color: "inherit"
+    },
+    counterCellLinkInner: {
+        padding: 16,
+        transition: "background-color 150ms",
+        "&:hover": {
+            backgroundColor: "#3f51b54d"
+        }
     },
     groupButtonLabel: {
         fontWeight: 100,
@@ -73,6 +85,7 @@ type CountersPageProps = {
         groupInterval?: CountersPageGroupIntervalType,
         showCount?: number,
     }) => void,
+    setFilter: (params?: EventsSetFilterParams) => void,
 }
 
 type CountersPageState = {

@@ -1,11 +1,12 @@
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import {updateCounters} from '../../actions/counters-page';
+import {setFilter} from '../../actions/events-page';
 import Component from '../../components/counters-page';
-import type {State} from "../../reducers";
+import type {RootState} from "../../reducers";
 
 
-function mapStateToProps(state: State) {
+function mapStateToProps(state: RootState) {
     let countersPage = state.countersPage;
 
     return {
@@ -19,7 +20,7 @@ function mapStateToProps(state: State) {
 }
 
 function mapDispatchToProps(dispatch) {
-    return bindActionCreators({updateCounters}, dispatch);
+    return bindActionCreators({updateCounters, setFilter}, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(Component);
