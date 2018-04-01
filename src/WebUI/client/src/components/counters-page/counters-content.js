@@ -11,6 +11,8 @@ import ExpandMore from 'material-ui-icons/ExpandMore';
 import {Link} from 'react-router-dom';
 
 import {getGroupTime} from '../../utils/time';
+import {getRoutePath} from "../../utils/route-utils";
+import {EVENTS} from "../../constants/route-paths";
 
 
 const configIntervals = {
@@ -188,7 +190,7 @@ function CountersTableRow({name, values, maxValue, isGroup, groupItems, classes,
                         className={isGroup ? classes.groupCell : classes.counterCell}
                         style={{background: `linear-gradient(to top, ${indigo["100"]} ${percent}%, rgba(255,255,255,0) ${percent2}%)`}}
                     >
-                        <Link className={classes.counterCellLink} to={"/events"}>
+                        <Link className={classes.counterCellLink} to={getRoutePath(EVENTS)}>
                             <div
                                 className={classes.counterCellLinkInner}
                                 onClick={() => {
